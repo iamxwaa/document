@@ -1,0 +1,25 @@
+version: '2'
+services:
+  httpd:
+    image: 192.168.118.145:5000/httpd-wh
+    ports:
+      - "18080:80"
+    networks:
+      - "netName1"
+    volumes:
+      - /iso/www/html/:/usr/local/apache2/htdocs/:ro
+  mysql:
+    image: 192.168.118.145:5000/mysql-wh:5.6
+    ports:
+      - "3306:3306"
+    networks:
+      - "netName1"
+    volumes:
+      - /root/docker/mysql/conf:/etc/mysql/conf.d
+      - /root/docker/mysql/logs:/logs 
+      - /root/docker/mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+networks:
+  netName1:
+    driver: bridge
