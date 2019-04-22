@@ -1,4 +1,4 @@
-##样例
+## 样例
 
 	version: '3'
 	
@@ -48,22 +48,22 @@
 	        echo 'Task apps imported'"
 
 
-###command
+### command
 1. 使用 command 可以覆盖容器启动后默认执行的命令
 
 		command: bundle exec thin -p 3000
 		command: [bundle, exec, thin, -p, 3000]
-###container_name
+### container_name
 1. 指定docker容器的名字
 		
 		container_name: app
-###depends_on
+### depends_on
 1. depends_on 确定容器的启动顺序
 
 		depends_on:
       		- db
       		- redis
-###dns
+### dns
 1. dns配置
 		
 		dns: 8.8.8.8
@@ -76,14 +76,14 @@
 		dns_search:
   			- dc1.example.com
   			- dc2.example.com
-###tmpfs
+### tmpfs
 1. 挂载临时目录到容器内部
 
 		tmpfs: /run
 		tmpfs:
 		  - /run
 		  - /tmp
-###entrypoint
+### entrypoint
 1. 指定接入点,覆盖 Dockerfile 中的定义
 		
 		entrypoint: /code/entrypoint.sh
@@ -94,7 +94,7 @@
 		    - -d
 		    - memory_limit=-1
 		    - vendor/bin/phpunit
-###env_file
+### env_file
 1. docker-compose.yml 中定义变量的文件。如果有变量名称与 environment 指令冲突，则以后者为准。
 
 		env_file: .env
@@ -102,33 +102,33 @@
 		  - ./common.env
 		  - ./apps/web.env
 		  - /opt/secrets.env
-###environment
+### environment
 1. 设置镜像变量，保存变量到镜像里面
 
 		environment:
 		  - RACK_ENV=development
 		  - SHOW=true
 		  - SESSION_SECRET
-###expose
+### expose
 1. 指定暴露的端口，但是只是作为一种参考，实际上docker-compose.yml的端口映射还得ports这样的标签。
 
 		expose:
 		 - "3000"
 		 - "8000"
-###external_links
+### external_links
 1. 连接不在docker-compose.yml中定义的容器
 
 		external_links:
 		 - redis_1
 		 - project_db_1:mysql
 		 - project_db_1:postgresql
-###extra_hosts
+### extra_hosts
 1. 往/etc/hosts文件中添加host配置
 
 		extra_hosts:
 		 - "somehost:162.242.195.82"
 		 - "otherhost:50.31.209.229"
-###labels
+### labels
 1. 向容器添加元数据，同Dockerfile的LABEL指令
 
 		labels:
@@ -139,7 +139,7 @@ labels:
   - "com.example.description=Accounting webapp"
   - "com.example.department=Finance"
   - "com.example.label-with-empty-value"
-##links
+### links
 1. 与Docker client的--link一样效果，会连接到其它服务中的容器。
 
 		links:
@@ -147,18 +147,18 @@ labels:
 		 - db
 		 - db:database
 		 - redis
-###logging
+### logging
 1. 配置日志服务
 		
 		logging:
 		  driver: syslog
 		  options:
 		    syslog-address: "tcp://192.168.0.42:123"
-###pid
+### pid
 1. 将PID模式设置为主机PID模式，跟主机系统共享进程命名空间。容器使用这个标签将能够访问和操纵其他容器和宿主机的名称空间。
 
 		pid: "host"
-###ports
+### ports
 1. 端口映射
 
 		ports:
@@ -166,24 +166,24 @@ labels:
 		 - "8000:8000"
 		 - "49100:22"
 		 - "127.0.0.1:8001:8001"
-###security_opt
+### security_opt
 1. 为每个容器覆盖默认的标签。简单说来就是管理全部服务的标签。比如设置全部服务的user标签值为USER。
 
 		security_opt:
 		  - label:user:USER
 		  - label:role:ROLE
-###stop_signal
+### stop_signal
 1. 设置另一个信号来停止容器。在默认情况下使用的是SIGTERM停止容器。设置另一个信号可以使用stop_signal标签。
 
 		stop_signal: SIGUSR1
-###volumes
+### volumes
 1. 挂载一个目录或者一个已存在的数据卷容器
 
 		volumes:
 		  - /var/lib/mysql ##容器内创建
 		  - /opt/data:/var/lib/mysql ##容器内:宿主机
 		  - ~/configs:/etc/configs/:ro ##只读
-###volumes_from
+### volumes_from
 从其它容器或者服务挂载数据卷，可选的参数是 :ro或者 :rw。
 
 		volumes_from:
@@ -191,13 +191,13 @@ labels:
 		  - service_name:ro
 		  - container:container_name
 		  - container:container_name:rw
-###extends
+### extends
 1. 扩展另一个服务，扩展内容可以是来自在当前文件，也可以是来自其他文件，相同服务的情况下，后来者会有选择地覆盖原有配置。
 
 		extends:
 		  file: common.yml
 		  service: webapp
-###network_mode
+### network_mode
 1. 网络模式
 
 		network_mode: "bridge"
@@ -205,7 +205,7 @@ labels:
 		network_mode: "none"
 		network_mode: "service:[service name]"
 		network_mode: "container:[container name/id]"
-###networks
+### networks
 1. 加入指定网络
 
 		services:
