@@ -208,4 +208,4 @@ zgs|12
 zys|11
 ---
 **数据库连接工具使用**
-![客户端工具连接hbase](file:///F:/document/md/phoenix1.png)
+![客户端工具连接hbase](./phoenix1.png)

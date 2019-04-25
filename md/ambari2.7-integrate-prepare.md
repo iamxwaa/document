@@ -1,31 +1,30 @@
- # ambari 2.7 集成
+ # ambari 2.7 服务集成准备
 ---------
 
-## 准备
+## 环境及安装包
 
-根据 linux arch 版本下载对应版本编译的ambari,此处下载的是**x86**版本,官网默认是**ppc64le**
-- 下载 ambari
- - http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.7.1.0/ambari-2.7.1.0-centos7.tar.gz
+- 系统 CentOS 7
+- Java JDK 1.8 以上
+  > jdk1.8.0_20.tar.gz
+- Mysql 数据库
+  > MySQL-client-5.5.50-1.linux2.6.x86_64.rpm<br>
+  MySQL-server-5.5.50-1.linux2.6.x86_64.rpm
+- 连接mysql的jar包  
+  > mysql-connector-java-5.1.23.jar
+- httpd 服务
+  > httpd-tools-2.4.6-88.el7.centos.x86_64.rpm<br>
+  httpd-2.4.6-88.el7.centos.x86_64.rpm
+- ambari 相关包
+  > 根据 linux arch 版本下载对应版本编译的ambari,此处下载的是**x86**版本,官网默认是**ppc64le**
 
-- 下载 HDP 组件
- - http://public-repo-1.hortonworks.com/HDP/centos7/3.x/updates/3.0.1.0/HDP-3.0.1.0-centos7-rpm.tar.gz
- - http://public-repo-1.hortonworks.com/HDP-GPL/centos7/3.x/updates/3.0.1.0/HDP-GPL-3.0.1.0-centos7-gpl.tar.gz
- - http://64.123.28.138/files/80630000008F9217/public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.22/repos/centos7/HDP-UTILS-1.1.0.22-centos7.tar.gz
+  名称|说明|备注
+  ---|---|---
+  ambari|ambari 2.7 的安装包|http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.7.1.0/ambari-2.7.1.0-centos7.tar.gz
+  HDP|HDP 3.0 组件|http://public-repo-1.hortonworks.com/HDP/centos7/3.x/updates/3.0.1.0/HDP-3.0.1.0-centos7-rpm.tar.gz
+  HDP-GPL|-|http://public-repo-1.hortonworks.com/HDP-GPL/centos7/3.x/updates/3.0.1.0/HDP-GPL-3.0.1.0-centos7-gpl.tar.gz
+  HDP-UTILS|-|http://64.123.28.138/files/80630000008F9217/public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.22/repos/centos7/HDP-UTILS-1.1.0.22-centos7.tar.gz
 
-- 准备系统 centos7
-
-- 准备 oracle jdk
-> jdk1.8.0_20.tar.gz
-
-- 准备 mysql 数据库
-> MySQL-client-5.5.50-1.linux2.6.x86_64.rpm<br>
-MySQL-server-5.5.50-1.linux2.6.x86_64.rpm
-
-- 准备 mysql-connector-java-5.1.23.jar
-
-- 准备 httpd
-
-## 快速安装 ambari
+## 安装 ambari
 
 - 配置host
 
@@ -354,129 +353,4 @@ yum install ambari-server
 
 ```
 ambari-server start
-```
-
-## 组件集成
-
-- 制作自己组件的RPM包 vap_flume-2.0-1.el7.centos.x86_64.rpm
-- 安装 createrepo
-```
-yum install createrepo
-```
-- 将制作的RPM包放在 /var/www/html/HDP/centos7/3.0.1.0-187/vap_flume 下
-- 删除 /var/www/html/HDP/centos7/3.0.1.0-187/repodata
-- 重新生成 repodata
-```
-cd /var/www/html/HDP/centos7/3.0.1.0-187
-createrepo ./
-```
-- 更新 yum 源
-```
-yum clean all
-yum repolist
-```
-- 验证是否添加成功
-> [root@public-repo-1 3.0.1.0-187]# yum search vap_flume<br>
-> Loaded plugins: fastestmirror<br>
-> Loading mirror speeds from cached hostfile<br>
->  * base: mirrors.cn99.com<br>
->  * extras: mirrors.163.com<br>
->  * updates: mirrors.njupt.edu.cn<br>
-> ====================================== N/S matched: vap_flume ======================================<br>
-> vap_flume.x86_64 : vrv audit platform flume<br>
-> 
->   Name and summary matches only, use "search all" for everything.<br>
-
-## ambari service 集成
-创建一个service文件夹，目录结构如下
-
-```
-VAPFLUME  #service名称,必须大写
-├─configuration  #配置文件目录
-├─package  #相关脚本目录
-│  └─scripts  #启停脚本目录
-└─quicklinks  #链接目录
-```
-
-- VAPFLUME 下创建 metainfo.xml
-
-```
-<?xml version="1.0"?>
-<metainfo>
-    <schemaVersion>2.0</schemaVersion>
-    <services>
-        <service>
-            <name>VAPFLUME</name>
-            <displayName>Vap Flume</displayName>
-            <comment>Vap Flume 数据采集器</comment>
-            <version>2.0</version>
-            
-            <quickLinksConfigurations>
-                <quickLinksConfiguration>
-                  <fileName>quicklinks.json</fileName>
-                  <default>true</default>
-                </quickLinksConfiguration>
-            </quickLinksConfigurations>
-            
-            <components>
-                <component>
-                    <name>VAP_FLUME_UI</name>
-                    <displayName>Flume Web Ui</displayName>
-                    <category>MASTER</category>
-                    <cardinality>1</cardinality>
-                    <commandScript>
-                        <script>scripts/vap_flume.py</script>
-                        <scriptType>PYTHON</scriptType>
-                        <timeout>600</timeout>
-                    </commandScript>
-                </component>
-            </components>
-            
-            <osSpecifics>
-                <osSpecific>
-                    <osFamily>any</osFamily>
-                    <packages>
-                        <package>
-                            <name>vap_flume</name>
-                        </package>
-                  </packages>
-                </osSpecific>
-            </osSpecifics>
-            
-            <configuration-dependencies>
-                <config-type>vap-flume</config-type>
-            </configuration-dependencies>
-        </service>
-    </services>
-</metainfo>
-```
-
-- VAPFLUME/configuration 下创建 vap-flume.xml
-
-```
-<?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
- 
-<configuration>
-  <property>
-    <name>vap.flume.base.url</name>
-    <value>http://localhost:28080/index</value>
-    <description>flume web ui address.</description>
- </property>
- <property>
-    <name>vap.flume.port</name>
-    <value>28080</value>
-    <description>flume web ui port.</description>
- </property>
- <property>
-    <name>vap.flume.home</name>
-    <value>/usr/hdp/2.4.0.0-169/vap-flume</value>
-    <description>flume web ui home path.</description>
- </property>
- <property>
-    <name>vap.flume.collector.memory</name>
-    <value>61400</value>
-    <description>collector max allow memory.</description>
- </property>
-</configuration>
 ```
