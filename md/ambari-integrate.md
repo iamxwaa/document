@@ -6,17 +6,19 @@
 
 - [Background](#Background)
 - [Structure](#Structure)
-- [Defining a Service and Components](#Defining a Service and Components)
-- [Using Stack Inheritance](#Using Stack Inheritance)
-- [Example: Implementing a Custom Service](#Example: Implementing a Custom Service)
-  - [Create and Add the Service](#Create and Add the Service)
-  - [Install the Service (via Ambari Web "Add Services")](#Install the Service (via Ambari Web "Add Services"))
-- [Example: Implementing a Custom Client-only Service](#Example: Implementing a Custom Client-only Service)
-  - [Create and Add the Service](#Create and Add the Service)
-  - [Install the Service (via the Ambari REST API)](#Install the Service (via the Ambari REST API))
-  - [Install the Service (via Ambari Web "Add Services")](#Install the Service (via Ambari Web "Add Services"))
-- [Example: Implementing a Custom Client-only Service (with Configs)](#Example: Implementing a Custom Client-only Service (with Configs))
-  - [Create and Add the Service to the Stack](#Create and Add the Service to the Stack)
+- [Defining a Service and Components](#defining-a-service-and-components)
+- [Using Stack Inheritance](#using-stack-inheritance)
+- [Example: Implementing a Custom Service](#example-implementing-a-custom-service)
+  - [Create and Add the Service](#create-and-add-the-service)
+  - [Install the Service (via Ambari Web "Add Services")](#install-the-service-via-ambari-web-add-services))
+- [Example: Implementing a Custom Client-only Service](#example-implementing-a-custom-client-only-service)
+  - [Create and Add the Service](#create-and-add-the-service)
+  - [Install the Service (via the Ambari REST API)](#install-the-service-via-the-ambari-rest-api))
+  - [Install the Service (via Ambari Web "Add Services")](#install-the-service-via-ambari-web-add-services)
+- [Example: Implementing a Custom Client-only Service (with Configs)](#example-implementing-a-custom-client-only-service-with-configs)
+  - [Create and Add the Service to the Stack](#create-and-add-the-service-to-the-stack)
+- [相关链接](#useful-links)
+
 
 ### Background
 
@@ -558,3 +560,9 @@ cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV/conf
 ```
 ambari-server restart
 ```
+
+### Useful Links
+- https://cwiki.apache.org/confluence/display/AMBARI/Custom+Services
+- https://cwiki.apache.org/confluence/display/AMBARI/Installation+Guide+for+Ambari+2.7.3
+- https://docs.hortonworks.com/HDPDocuments/Ambari-2.7.1.0/bk_ambari-installation-ppc/content/setting_up_a_local_repository_with_no_internet_access.html
+- https://www.ibm.com/developerworks/cn/opensource/os-cn-bigdata-ambari3/index.html
