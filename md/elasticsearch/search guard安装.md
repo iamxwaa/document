@@ -1,82 +1,115 @@
-##search guard 安装
-### 安装
-1. 在线安装:
-  - 执行以下命令
-```
-bin/elasticsearch-plugin install -b com.floragunn:search-guard-6:<version>
-```
-2. 离线安装:
- - 下载es对应版本 [search guard](https://docs.search-guard.com/latest/search-guard-versions "search guard")
- - 执行以下命令
-```
-bin/elasticsearch-plugin install -b file:///path/to/search-guard-6-<version>.zip
-```
+# search guard 安装
 
-### 生成TLS证书
-1. 下载search guard提供的证书生成工具[search-guard-tlstool-1.5.zip](https://search.maven.org/search?q=a:search-guard-tlstool)
-2. 该工具可用来做以下配置
- - Generating Root and Intermediate CAs
- - Generating Node, Client and Admin certificates
- - Generating CSRs
- - Validating certificates
-3. 生成证书
- - 将压缩包放到es/plugins/search-guard-6下
- - 解压缩
-```
-unzip search-guard-tlstool-1.5.zip
-```
- - tools/sgtlstool.sh配置说明详见*表1*
- - 复制而配置模板
-```
-cp search-guard-6/config/template.yml search-guard-6/config/tlsconfig.yml
-```
- - 修改tlsconfig.yml配置,详见*表2*
- - 生成证书
-```
-cd search-guard-6/tools
-./sgtlstool.sh -c ../config/tlsconfig.yml -ca -crt
-```
- - 在search-guard-6/tools/out文件夹下可以找到生成的证书相关文件
-	- client-certificates.readme
-	- root-ca.key //Private key of the Root CA
-	- root-ca.pem //Root certificate
-	- signing-ca.key
-	- signing-ca.pem
-	- vrv218_client.key
-	- vrv218_client.pem
-	- vrv218_node_elasticsearch_config_snippet.yml
-	- vrv218_node_http.key
-	- vrv218_node_http.pem
-	- vrv218_node.key
-	- vrv218_node.pem
+----------
+
+## 安装
+
+- 在线安装:
+  - 执行以下命令
+
+   ```
+   bin/elasticsearch-plugin install -b com.floragunn:search-guard-6:<version>
+   ```
+
+- 离线安装:
+  - 下载es对应版本 [search guard](https://docs.search-guard.com/latest/search-guard-versions "search guard")
+ 
+  - 执行以下命令
+   
+   ```
+   bin/elasticsearch-plugin install -b file:///path/to/search-guard-6-<version>.zip
+   ```
+
+## 生成TLS证书
+
+- 下载search guard提供的证书生成工具[search-guard-tlstool-1.5.zip](https://search.maven.org/search?q=a:search-guard-tlstool)
+
+- 该工具可用来做以下配置
+  
+  - Generating Root and Intermediate CAs
+  
+  - Generating Node, Client and Admin certificates
+  
+  - Generating CSRs
+  
+  - Validating certificates
+
+- 生成证书
+
+  - 将压缩包放到es/plugins/search-guard-6下
+
+  - 解压缩
+
+   ```
+   unzip search-guard-tlstool-1.5.zip
+   ```
+
+  - tools/sgtlstool.sh配置说明详见[表1](#table1)
+
+  - 复制而配置模板
+
+   ```
+   cp search-guard-6/config/template.yml search-guard-6/config/tlsconfig.yml
+   ```
+  
+  - 修改tlsconfig.yml配置,详见[表2](#table2)
+  
+  - 生成证书
+   ```
+   cd search-guard-6/tools
+   ./sgtlstool.sh -c ../config/tlsconfig.yml -ca -crt
+   ```
+
+  - 在search-guard-6/tools/out文件夹下可以找到生成的证书相关文件
+	 - client-certificates.readme
+	 - root-ca.key //Private key of the Root CA
+	 - root-ca.pem //Root certificate
+	 - signing-ca.key
+	 - signing-ca.pem
+	 - vrv218_client.key
+	 - vrv218_client.pem
+	 - vrv218_node_elasticsearch_config_snippet.yml
+	 - vrv218_node_http.key
+	 - vrv218_node_http.pem
+	 - vrv218_node.key
+	 - vrv218_node.pem
 
 ###配置elasticsearch
-1. 将生成的文件复制到es/config文件夹下
+- 将生成的文件复制到es/config文件夹下
+
 ```
 mv out/* ../../../config/
 ```
-2. 合并vrv218_node_elasticsearch_config_snippet.yml中的配置到es的配置中
+
+- 合并vrv218_node_elasticsearch_config_snippet.yml中的配置到es的配置中
+
 ```
 cat vrv218_node_elasticsearch_config_snippet.yml >> elasticsearch.yml
 ```
-3. 关闭search guard企业版功能
+
+- 关闭search guard企业版功能
+
 ```
 echo searchguard.enterprise_modules_enabled: false >> elasticsearch.yml
 ```
-4. 启动sgadmin
+- 启动sgadmin
+
 ```
 cd search-guard-6/tools
 ./sgadmin.sh 
--cd ../sgconfig/  //search guard配置文件目录
--icl //忽略集群名称
--nhnv //关闭hostname验证
+-cd ../sgconfig/  #search guard配置文件目录
+-icl #忽略集群名称
+-nhnv #关闭hostname验证
 -cacert ../../../config/root-ca.pem 
--cert ../../../config/vrv218_client.pem //配置的admin所生成证书文件
--key ../../../config/vrv218_client.key //配置admin所生成的证书私钥
--p 9330 //es tcp端口
--keypass 123456 //因为tlsconfig.yml配置了密码,所以这里指定配置密码
+-cert ../../../config/vrv218_client.pem #配置的admin所生成证书文件
+-key ../../../config/vrv218_client.key #配置admin所生成的证书私钥
+-p 9330 #es tcp端口
+-keypass 123456 #因为tlsconfig.yml配置了密码,所以这里指定配置密码
 ```
-输出以下信息表示成功,后续访问es需要使用**https**协议。*修改elasticsearch.yml，设置searchguard.ssl.http.enabled: false可以关闭https访问*
+
+输出以下信息表示成功,后续访问es需要使用**https**协议。
+> 修改elasticsearch.yml，设置searchguard.ssl.http.enabled: false可以关闭https访问
+
 ```
 Search Guard Admin v6
 Will connect to localhost:9330 ... done
@@ -115,33 +148,42 @@ Will update 'sg/actiongroups' with ../sgconfig/sg_action_groups.yml
    SUCC: Configuration for 'actiongroups' created or updated
 Done with success
 ```
-5. 访问 https://192.168.119.218:9200 会提示输入账号密码,输入admin/admin即可
 
-###权限配置
-1. 创建账号
- - 使用search-guard-6/tools/hash.sh生成密码
-```
-./hash.sh -p 123456
-$2y$12$gFHRiNGzli7HEhK1J56FwebOupUX97reBtb4hHXYXB9rTPSRACay6
-```
- - 修改search-guard-6/sgconfig/sg_internal_users.yml
-```
-	#账号
-	vrv218:
-	  readonly: true
-	#填写hash.sh生成的密码123456
-	  hash: $2y$12$gFHRiNGzli7HEhK1J56FwebOupUX97reBtb4hHXYXB9rTPSRACay6
-	  roles: //配置角色
-	    - admin	
-```
- - 重新执行sgadmin.sh更新配置
-2. 配置角色
-```
-...
-```
+- 访问 https://192.168.119.218:9200 会提示输入账号密码,输入admin/admin即可
 
-###附录
-表1
+## 权限配置
+- 创建账号
+
+  - 使用search-guard-6/tools/hash.sh生成密码
+
+   ```
+   ./hash.sh -p 123456
+   $2y$12$gFHRiNGzli7HEhK1J56FwebOupUX97reBtb4hHXYXB9rTPSRACay6
+   ```
+  
+  - 修改search-guard-6/sgconfig/sg_internal_users.yml
+
+   ```
+      #账号
+      vrv218:
+      readonly: true
+      #填写hash.sh生成的密码123456
+      hash: $2y$12$gFHRiNGzli7HEhK1J56FwebOupUX97reBtb4hHXYXB9rTPSRACay6
+      roles: //配置角色
+         - admin	
+   ```
+
+  - 重新执行sgadmin.sh更新配置
+
+- 配置角色
+
+   ```
+   ...
+   ```
+
+## 附录
+
+### table1
 
 Name|	Description
 --|--
@@ -153,7 +195,8 @@ Name|	Description
 -ca,–create-ca|	Create new Root and Intermediate CAs
 -crt,–create-cert|	Create certificates using an existing or newly created local certificate authority
 
-表2
+### table2
+
 ```
 ###
 ### Self-generated certificate authority
