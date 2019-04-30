@@ -5,10 +5,9 @@
 ## 下载
 
 - 下载CDH Manager
-http://archive.cloudera.com/cm5/cm/5/
-
+  <http://archive.cloudera.com/cm5/cm/5/>
 - 下载组件包
-http://archive.cloudera.com/cdh5/parcels/latest/
+  <http://archive.cloudera.com/cdh5/parcels/latest/>
 
 ## 准备环境
 
@@ -24,9 +23,9 @@ ip|hostname|remark
 
   - 创建以下数据库
 
-  ```
+  ```sql
   create database hive DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
-  create database oozie DEFAULT CHARSET utf8 COLLATE utf8_general_ci; 
+  create database oozie DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
   create database amon DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
   create database hue DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
   create database cm DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
@@ -36,7 +35,7 @@ ip|hostname|remark
 
   - 每台机器执行
 
-  ```
+  ```shell
   ssh-keygen
   cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
   ```
@@ -47,7 +46,7 @@ ip|hostname|remark
   
 - /etc/hosts写入
 
-```
+```shell
 192.168.118.145 vrv145
 192.168.118.147 vrv147
 192.168.118.148 vrv148
@@ -67,7 +66,7 @@ ip|hostname|remark
 
 - 复制Agent到其他所有节点：
 
-```
+```shell
 scp -r /opt/cm-5.15.1 root@vrv147:/opt/
 scp -r /opt/cm-5.15.1 root@vrv148:/opt/
 ```
@@ -86,7 +85,7 @@ scp -r /opt/cm-5.15.1 root@vrv148:/opt/
 
 - 创建用户cloudera-scm,每台机器上执行
 
-```
+```shell
 useradd --system --no-create-home --shell=/bin/false --comment "Cloudera SCM User" cloudera-scm
 ```
 
@@ -94,7 +93,7 @@ useradd --system --no-create-home --shell=/bin/false --comment "Cloudera SCM Use
 
 - master节点，初始化数据库
 
-```
+```shell
 /opt/cm-5.15.1/share/cmf/schema/scm_prepare_database.sh -h vrv145 --scm-host vrv145 mysql cm root 123456
 ```
 
@@ -102,12 +101,12 @@ useradd --system --no-create-home --shell=/bin/false --comment "Cloudera SCM Use
 
 - master节点执行
 
-```
+```shell
 /opt/cm-5.15.1/etc/init.d/cloudera-scm-server start
 ```
 
 - 所有节点
 
-```
+```shell
 /opt/cm-5.15.1/etc/init.d/cloudera-scm-agent start
 ```

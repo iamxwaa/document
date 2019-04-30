@@ -48,25 +48,28 @@ Firebird|firebird|No Issues
 SQLite|sqlite|No Issues
 
 ## 使用 liquidbase
+
 - 命令行
- - [Command Line](http://www.liquibase.org/documentation/command_line.html)
- - [Ant](http://www.liquibase.org/documentation/ant/index.html)
- - [Maven](http://www.liquibase.org/documentation/maven/index.html)
+  - [Command Line](http://www.liquibase.org/documentation/command_line.html)
+  - [Ant](http://www.liquibase.org/documentation/ant/index.html)
+  - [Maven](http://www.liquibase.org/documentation/maven/index.html)
 - 集成
- - [Spring](http://www.liquibase.org/documentation/spring.html)
- - [Servlet Listener](http://www.liquibase.org/documentation/servlet_listener.html)
- - [CDI Environment](http://www.liquibase.org/documentation/cdi.html)
+  - [Spring](http://www.liquibase.org/documentation/spring.html)
+  - [Servlet Listener](http://www.liquibase.org/documentation/servlet_listener.html)
+  - [CDI Environment](http://www.liquibase.org/documentation/cdi.html)
 - 离线
- - [Using Offline Database Support](http://www.liquibase.org/documentation/offline.html)
+  - [Using Offline Database Support](http://www.liquibase.org/documentation/offline.html)
 
 ## 内部表
+
 - DATABASECHANGELOG
 - DATABASECHANGELOGLOCK
 
 ## 配置格式
+
 ### XML Format
 
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 
 <databaseChangeLog
@@ -109,7 +112,7 @@ SQLite|sqlite|No Issues
 
 ### YAML Format
 
-```
+```yml
 databaseChangeLog:
   - preConditions:
     - runningAs:
@@ -155,7 +158,7 @@ databaseChangeLog:
 
 ### JSON Format
 
-```
+```json
 {
     "databaseChangeLog": [
         {
@@ -214,7 +217,7 @@ databaseChangeLog:
                 ]
             }
         },
-		... ...
+        ... ...
         {
             "changeSet": {
                 "id": "3",
@@ -241,16 +244,19 @@ databaseChangeLog:
 - SQL 格式
 
  SQL文件使用注释来提供liquidbase所需要的元数据. 每个SQL文件第一行必须以如下注释开始:
-```
-	--liquibase formatted sql
+
+```sql
+--liquibase formatted sql
 ```
 
 - Changesets
 
  每个changeset必须以如下注释开始:
+
+```sql
+-changeset author:id attribute1:value1 attribute2:value2 [...]
 ```
-	--changeset author:id attribute1:value1 attribute2:value2 [...]
-```
+
 - Changeset 可用的配置属性
 
 属性|描述
@@ -271,39 +277,45 @@ logicalFilePath|Sets a logical file path in databasechangelog table instead of p
 - 前置条件
 
  前置条件可以为每个changeset提供所需的配置.
-```
-	--preconditions onFail:HALT onError:HALT
-	--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM my_table
+
+```sql
+--preconditions onFail:HALT onError:HALT
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM my_table
 ```
 
 - 回滚操作
 
  回滚操作是通过注释来实现的.每个changeset中可以使用如下配置实现回滚操作.
-```
+
+```sql
 --rollback SQL STATEMENT
 ```
 
 - 简单的 Change Log 样例
+
+```sql
+--liquibase formatted sql
+
+--changeset nvoxland:1
+create table test1 (
+    id int primary key,
+    name varchar(255)
+);
+--rollback drop table test1;
+
+--changeset nvoxland:2
+insert into test1 (id, name) values (1, ‘name 1′);
+insert into test1 (id, name) values (2, ‘name 2′);
+
+--changeset nvoxland:3 dbms:oracle
+create sequence seq_test;
 ```
-	--liquibase formatted sql
-	
-	--changeset nvoxland:1
-	create table test1 (
-	    id int primary key,
-	    name varchar(255)
-	);
-	--rollback drop table test1;
-	
-	--changeset nvoxland:2
-	insert into test1 (id, name) values (1, ‘name 1′);
-	insert into test1 (id, name) values (2, ‘name 2′);
-	
-	--changeset nvoxland:3 dbms:oracle
-	create sequence seq_test;
-```
+
 ## Diffs
+
 ### Report Mode
-```
+
+```s
 Base Database: BOB jdbc:oracle:thin:@testdb:1521:latest
 Target Database: BOB jdbc:oracle:thin:@localhost/XE
 Product Name: EQUAL
@@ -332,8 +344,10 @@ Unexpected Indexes: NONE
 Missing Sequences: NONE
 Unexpected Sequences: NONE
 ```
+
 ### ChangeLog Mode
-```
+
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.1"
@@ -371,13 +385,17 @@ Unexpected Sequences: NONE
 ```
 
 ## 命令行
+
 liquidbase 命令行格式如下:
+
+```shell
+liquibase [options] [command] [command parameters]
 ```
-	liquibase [options] [command] [command parameters]
-```
+
 也可以使用
-```
-	java -jar <path-to-liquibase-jar> [options] [command] [command parameters]
+
+```shell
+java -jar <path-to-liquibase-jar> [options] [command] [command parameters]
 ```
 
 ### 数据库更新命令
@@ -388,7 +406,6 @@ update|Updates database to current version.
 updateCount &lt;value>|Applies the next <value> change sets.
 updateSQL|Writes SQL to update database to current version to STDOUT.
 updateCountSQL &lt;value>|Writes SQL to apply the next <value> change sets to STDOUT.
-
 
 ### 数据库回滚命令
 
@@ -481,7 +498,8 @@ clearCheckSums|Removes current checksums from database. On next run checksums wi
 -D&lt;property.name>=&lt;property.value>|Pass a name/value pair for substitution of ${} blocks in the change log(s).
 
 如果不想每次都在命令行中输入配置参数,也可以使用liquibase.properties文件来代替，默认情况liquidbase会在当前工作空间中寻找liquidbase.properties文件,也可以使用--defaultsFile来指定配置文件路径
-```
+
+```properties
 # liquibase.properties
 
 driver: oracle.jdbc.OracleDriver
@@ -492,8 +510,10 @@ password: tiger
 ```
 
 ### 例子
+
 更新数据库到最新版本
-```
+
+```shell
 java -jar liquibase.jar 
       --driver=oracle.jdbc.OracleDriver 
       --classpath=\path\to\classes:jdbcdriver.jar 
@@ -503,8 +523,10 @@ java -jar liquibase.jar
       --password=tiger 
       update
 ```
+
 不执行changeset,将变更脚本写入到/tmp/script.sql
-```
+
+```shell
 java -jar liquibase.jar 
         --driver=oracle.jdbc.OracleDriver 
         --classpath=jdbcdriver.jar 
@@ -513,8 +535,10 @@ java -jar liquibase.jar
         --password=tiger 
         updateSQL > /tmp/script.sql
 ```
+
 比对两个数据库之间的区别
-```
+
+```shell
 java -jar liquibase.jar 
         --driver=oracle.jdbc.OracleDriver 
         --url=jdbc:oracle:thin:@testdb:1521:test

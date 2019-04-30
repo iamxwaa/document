@@ -6,14 +6,14 @@
 
 - 添加kafka认证账号
 
-```
+```shell
 sudo /usr/sbin/kadmin.local -q 'addprinc -randkey kafka/vrv145@VRV.COM.CN'
 sudo /usr/sbin/kadmin.local -q 'addprinc -randkey zookeeper/vrv145@VRV.COM.CN'
 ```
 
 - 生成票据文件
 
-```
+```shell
 sudo /usr/sbin/kadmin.local -q "ktadd -k /etc/security/keytabs/kafka.keytab kafka/vrv145@VRV.COM.CN"
 sudo /usr/sbin/kadmin.local -q "ktadd -k /etc/security/keytabs/zookeeper.keytab zookeeper/vrv145@VRV.COM.CN"
 ```
@@ -26,7 +26,7 @@ sudo /usr/sbin/kadmin.local -q "ktadd -k /etc/security/keytabs/zookeeper.keytab 
 
   - 创建jaas文件/data/kafka_2.11-0.10.1.0/config/kakfa-jaas.conf
 
-  ```
+  ```conf
   KafkaServer {
         com.sun.security.auth.module.Krb5LoginModule required
         useKeyTab=true
@@ -45,37 +45,37 @@ sudo /usr/sbin/kadmin.local -q "ktadd -k /etc/security/keytabs/zookeeper.keytab 
     };
   ```
 
- - 复制krb5.conf和kakfa-jaas.conf到每台kafka broker对应的目录下
+  - 复制krb5.conf和kakfa-jaas.conf到每台kafka broker对应的目录下
 
- - 修改/data/kafka_2.11-0.10.1.0/bin/kafka-run-class.sh
+  - 修改/data/kafka_2.11-0.10.1.0/bin/kafka-run-class.sh
 
- ```
-	# JVM performance options
-	if [ -z "$KAFKA_JVM_PERFORMANCE_OPTS" ]; then
-	  KAFKA_JVM_PERFORMANCE_OPTS="-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+DisableExplicitGC -Djava.awt.headless=true -Djava.security.krb5.conf=/etc/krb5.conf -Djava.security.auth.login.config=/data/kafka_2.11-0.10.1.0/config/kakfa-jaas.conf -Dsun.security.krb5.debug=true"
-	fi
- ```
+  ```shell
+  # JVM performance options
+  if [ -z "$KAFKA_JVM_PERFORMANCE_OPTS" ]; then
+    KAFKA_JVM_PERFORMANCE_OPTS="-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+DisableExplicitGC -Djava.awt.headless=true -Djava.security.krb5.conf=/etc/krb5.conf -Djava.security.auth.login.config=/data/kafka_2.11-0.10.1.0/config/kakfa-jaas.conf -Dsun.security.krb5.debug=true"
+  fi
+  ```
 
- - 配置SASL，修改/data/kafka_2.11-0.10.1.0/config/server.properties
+  - 配置SASL，修改/data/kafka_2.11-0.10.1.0/config/server.properties
 
- ```
-	listeners=SASL_PLAINTEXT://192.168.118.145:9092
-	security.inter.broker.protocol=SASL_PLAINTEXT
-	sasl.mechanism.inter.broker.protocol=GSSAPI
-	sasl.enabled.mechanisms=GSSAPI
-	sasl.kerberos.service.name=kafka(票据里面账号是kafka/vrv145@VRV.COM.CN所以名称是kafka)
- ```
+  ```properties
+  listeners=SASL_PLAINTEXT://192.168.118.145:9092
+  security.inter.broker.protocol=SASL_PLAINTEXT
+  sasl.mechanism.inter.broker.protocol=GSSAPI
+  sasl.enabled.mechanisms=GSSAPI
+  #票据里面账号是kafka/vrv145@VRV.COM.CN所以名称是kafka
+  sasl.kerberos.service.name=kafka
+  ```
 
 - 修改zookeeper
 
   - zoo.cfg或config/zookeeper.properties添加
 
-  ```
+  ```properties
   authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
   requireClientAuthScheme=sasl
   jaasLoginRenew=3600000
   ```
-
 
 - 启动kafka集群
 
@@ -85,7 +85,7 @@ Caused by: KrbException: Encryption type AES256 CTS mode with HMAC SHA1-96 is no
 
 ## producer编程
 
-```
+```java
 object Producer {
 
   System.setProperty("java.security.krb5.conf",
@@ -130,7 +130,7 @@ object Producer {
 
 producer_jaas.conf
 
-```
+```jaas
 KafkaClient {
   com.sun.security.auth.module.Krb5LoginModule required
   useKeyTab=true
@@ -152,7 +152,7 @@ Session Key = EncryptionKey: keyType=18 keyBytes (hex dump)=
 
 ## consumer编程
 
-```
+```java
 object Consumer {
 
   System.setProperty("java.security.krb5.conf",
@@ -187,7 +187,7 @@ object Consumer {
 
 consumer_jaas.conf
 
-```
+```conf
 KafkaClient {
   com.sun.security.auth.module.Krb5LoginModule required
   useKeyTab=true
@@ -203,7 +203,7 @@ KafkaClient {
 
 - 启用配置,添加超级用户,修改config/server.properties
 
-```
+```properties
 authorizer.class.name=kafka.security.auth.SimpleAclAuthorizer
 super.users=User:kafka(此处kafka这个值对应service.name的值)
 ```
@@ -211,7 +211,7 @@ super.users=User:kafka(此处kafka这个值对应service.name的值)
 - 启用配置后，默认所有未添加权限的producer和consumer无法访问kafka，修改config/server.properties
 可以默认全部可访问kafka
 
-```
+```properties
 allow.everyone.if.no.acl.found=true
 ```
 
@@ -240,7 +240,7 @@ bin/kafka-acls.sh
 
 - 查看权限列表
 
-```
+```shell
 bin/kafka-acls.sh --list --authorizer-properties zookeeper.connect=localhost:2181
 ```
 
@@ -248,21 +248,21 @@ bin/kafka-acls.sh --list --authorizer-properties zookeeper.connect=localhost:218
 
   - 指定principal可访问
 
-  ```
+  ```shell
   bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:producer --operation Read --operation Write --topic acl1
   ```
 
- - 指定ip可访问,--allow-host的值只能为ip
+  - 指定ip可访问,--allow-host的值只能为ip
 
- ```
- bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-host 192.168.118.139 --allow-principal User:* --operation Read --operation Write --topic acl1
- ```
+  ```shell
+  bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-host 192.168.118.139 --allow-principal User:* --operation Read --operation Write --topic acl1
+  ```
 
 - 添加consumer权限
 
   - 指定principal和group id可访问
   
-  ```
+  ```shell
   bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:consumer --consumer --group-test --topic acl1
   ```
 
@@ -270,6 +270,6 @@ bin/kafka-acls.sh --list --authorizer-properties zookeeper.connect=localhost:218
 
 - sasl.jaas.config动态配置格式
 
-```
+```conf
 com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab="D:/IdeaProjects/git/kafka-manager/kerberos/kmanager.keytab" principal="kmanager/vrv145@VRV.COM.CN" useTicketCache=false serviceName=kmanager debug=false;
 ```

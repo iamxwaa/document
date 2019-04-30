@@ -32,22 +32,23 @@ vrv148 | master slave
 `yum install krb5-libs krb5-workstation`
 
 ## 服务配置
-**以下操作均在vrv148上执行**
+
+> 以下操作均在vrv148上执行
 
 修改/etc/krb5.conf文件
 
 设置default_realm
 
-```
+```conf
 default_realm = me
 ```
 
 添加realms
 
-```
+```conf
 me = {
-	kdc = vrv148
-	admin_server = vrv148
+    kdc = vrv148
+    admin_server = vrv148
 }
 ```
 
@@ -57,14 +58,14 @@ me = {
 
 设置realms，域对应为/etc/krb5.conf中default_realm的配置
 
-```
+```conf
 me = {
-	master_key_type = aes256-cts
-	acl_file = /var/kerberos/krb5kdc/kadm5.acl
-	dict_file = /usr/share/dict/words
-	admin_keytab = /var/kerberos/krb5kdc/kadm5.keytab
-	max_renewable_life = 10d
-	supported_enctypes = aes128-cts:normal des3-hmac-sha1:normal arcfour-hmac:normal camellia256-cts:normal camellia128-cts:normal des-hmac-sha1:normal des-cbc-md5:normal des-cbc-crc:normal
+    master_key_type = aes256-cts
+    acl_file = /var/kerberos/krb5kdc/kadm5.acl
+    dict_file = /usr/share/dict/words
+    admin_keytab = /var/kerberos/krb5kdc/kadm5.keytab
+    max_renewable_life = 10d
+    supported_enctypes = aes128-cts:normal des3-hmac-sha1:normal arcfour-hmac:normal camellia256-cts:normal camellia128-cts:normal des-hmac-sha1:normal des-cbc-md5:normal des-cbc-crc:normal
 }
 ```
 
@@ -72,15 +73,15 @@ me = {
 
 添加kadmin账号,*me*为krb5.conf中配置的defaul_realm
 
-```
-*/admin@me	*
+```conf
+*/admin@me  *
 ```
 
 ## 创建kerberos数据库
 
 在master服务器上执行以下命令
 
-```
+```shell
 kdb5_util create -r me -s
 ```
 
@@ -90,7 +91,7 @@ kdb5_util create -r me -s
 
 在master服务器上执行以下命令
 
-```
+```shell
 kadmin.local -q "addprinc root/admin@me"
 ```
 
@@ -98,20 +99,20 @@ kadmin.local -q "addprinc root/admin@me"
 
 启动kerberos服务
 
-```
+```shell
 systemctl start krb5kdc
 systemctl start kadmin
 ```
 
 用户登录
 
-```
+```shell
 kinit root/admin
 ```
 
 验证登录
 
-```
+```shell
 [root@vrv148 ~]# klist
 Ticket cache: KEYRING:persistent:0:0
 Default principal: root/admin@me
@@ -122,7 +123,7 @@ Valid starting       Expires              Service principal
 
 添加账号
 
-```
+```shell
 [root@vrv148 ~]# kadmin -q "addprinc test2"
 Authenticating as principal root/admin@me with password.
 Password for root/admin@me: 
@@ -135,7 +136,7 @@ Principal "test2@me" created.
 
 新建测试账号登录
 
-```
+```shell
 [root@vrv148 ~]# kinit test2
 Password for test2@me: 
 [root@vrv148 ~]# klist
@@ -148,7 +149,7 @@ Valid starting       Expires              Service principal
 
 导出票据文件
 
-```
+```shell
 kadmin:  xst -k /home/vrv/test.keytab test
 Entry for principal test with kvno 5, encryption type aes128-cts-hmac-sha1-96 added to keytab WRFILE:/home/vrv/test.keytab.
 ...
@@ -159,7 +160,7 @@ Entry for principal test with kvno 5, encryption type des-cbc-md5 added to keyta
 
 - 查看票据信息
 
-```
+```shell
 [root@vrv148 ~]# ktutil
 ktutil:  rkt /home/vrv/test.keytab 
 ktutil:  list
@@ -176,7 +177,7 @@ slot KVNO Principal
 
 - 使用票据登录
 
-```
+```shell
 [root@vrv148 ~]# kinit -kt /home/vrv/test.keytab test@me
 [root@vrv148 ~]# klist
 Ticket cache: KEYRING:persistent:0:krb_ccache_PFm0472

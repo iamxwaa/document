@@ -2,19 +2,21 @@
 
 --------
 
-**以下均为为CDH版本配置说明**
-
 ## CDH配置
 
 进入 管理->安全->kerberos凭据 
+
 - 开启kerberos认证
+
 - 选择导入kerberos account manager凭据
   - 填写kadmin的管理员账号及密码
+
 - 选择生成丢失kerberos凭据
 
 ## hdfs开启kerberos
 
 进入hdfs配置页面
+
 - 修改hadoop.security.authentication为kerberos
 - 修改hadoop.security.authorization为true
 - 修改dfs.datanode.address为1004
@@ -23,19 +25,21 @@
 ## hbase开启kerberos
 
 进入hbase配置页面
+
 - 修改hbase.security.authentication为kerberos
 - 修改hbase.security.authorization为true
 
 ## zookeeper开启kerberos
 
 进入zookeeper配置页面
-- 修改 enableSecurity为true
+
+- 修改enableSecurity为true
 
 ## 错误与处理
 
 ERROR:
 
-```
+```shell
 kadmind[6924]: No dictionary file specified, continuing without one.
 kadmind[6924]: setting up network...
 kadmind[6924]: Permission denied - Cannot bind server socket to port 464 address 0.0.0.0
@@ -54,8 +58,9 @@ Reason (provided by tlyu): It is trying to bind to a privileged port. you need t
 
 SOLUTION:
 
-```
-In kdc.conf inserted the last two lines here
+```properties
+#In kdc.conf inserted the last two lines here
+
 kdc_ports = 8888
 kpasswd_port = 8887
 kadmind_port = 8886

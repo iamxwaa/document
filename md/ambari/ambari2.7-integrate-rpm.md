@@ -1,21 +1,26 @@
 # RPM 包制作
+
 -------
 
 依赖命令
-```
+
+```shell
 rpmbuild
 rpmdevtool
 ```
 
 打包命令
-```
+
+```shell
 rpmbuild -bb vap_flume-2.0.spec 
 ```
 
 生成目录
-```
+
+```shell
 rpmdev-setuptree
 ```
+
 目录名|说明|macros中的宏名
 ---|---|---
 BUILD|编译rpm包的临时目录|%_builddir
@@ -26,7 +31,8 @@ SPECS|存放SPEC文件的目录(重要)|%_specdir
 SRPMS|软件最终的rpm源码格式存放路径(暂时忽略掉，别挂在心上)|%_srcrpmdir
 
 生成spec文件
-```
+
+```shell
 rpmdev-newspec -o Name-version.spec
 ```
 
@@ -44,7 +50,8 @@ rpmdev-newspec -o Name-version.spec
 %changelog|定义软件包修改的日志
 
 一个spec文件示例
-```
+
+```shell
 %define __jar_repack 0
 %define _v_path /usr/hdp/2.4.0.0-169
 Name:           vap_flume

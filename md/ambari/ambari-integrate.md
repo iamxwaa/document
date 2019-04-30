@@ -10,15 +10,14 @@
 - [Using Stack Inheritance](#using-stack-inheritance)
 - [Example: Implementing a Custom Service](#example-implementing-a-custom-service)
   - [Create and Add the Service](#create-and-add-the-service)
-  - [Install the Service (via Ambari Web "Add Services")](#install-the-service-via-ambari-web-add-services))
+  - [Install the Service (via Ambari Web "Add Services")](#install-the-service-via-ambari-web-add-services)
 - [Example: Implementing a Custom Client-only Service](#example-implementing-a-custom-client-only-service)
   - [Create and Add the Service](#create-and-add-the-service)
-  - [Install the Service (via the Ambari REST API)](#install-the-service-via-the-ambari-rest-api))
+  - [Install the Service (via the Ambari REST API)](#install-the-service-via-the-ambari-rest-api)
   - [Install the Service (via Ambari Web "Add Services")](#install-the-service-via-ambari-web-add-services)
 - [Example: Implementing a Custom Client-only Service (with Configs)](#example-implementing-a-custom-client-only-service-with-configs)
   - [Create and Add the Service to the Stack](#create-and-add-the-service-to-the-stack)
 - [相关链接](#useful-links)
-
 
 ### Background
 
@@ -27,7 +26,8 @@ The Stack definitions can be found in the source tree at `/ambari-server/src/mai
 ### Structure
 
 The structure of a Stack definition is as follows:
-```
+
+```shell
 |_ stacks
    |_ <stack_name>
       |_ <stack_version>
@@ -59,7 +59,8 @@ CLIENT|install, configure, status
 Ambari supports different commands scripts written in **PYTHON**. The type is used to know how to execute the command scripts. You can also create custom commands if there are other commands beyond the default lifecycle commands your component needs to support.
 
 For example, in the **YARN** Service describes the ResourceManager component as follows in `metainfo.xml`:
-```
+
+```xml
 <component>
   <name>RESOURCEMANAGER</name>
   <category>MASTER</category>
@@ -80,15 +81,19 @@ For example, in the **YARN** Service describes the ResourceManager component as 
   </customCommands>
 </component>
 ```
+
 The ResourceManager is a **MASTER** component, and the command script is `scripts/resourcemanager.py`, which can be found in the `services/YARN/package directory`. That command script is **PYTHON** and that script implements the default lifecycle commands as python methods. This is the **install** method for the default **INSTALL** command:
-```
+
+```python
 class Resourcemanager(Script):
   def install(self, env):
     self.install_packages(env)
     self.configure(env)
 ```
+
 You can also see a custom command is defined DECOMMISSION, which means there is also a decommission method in that python command script:
-```
+
+```python
 def decommission(self, env):
   import params
  
@@ -109,7 +114,8 @@ add new Services in the child Stack (not in the parent Stack)
 override command scripts of the parent Services
 override configurations of the parent Services
 For example, the HDP 2.1 Stack extends HDP 2.0.6 Stack so only the changes applicable to HDP 2.1 Stack are present in that Stack definition. This extension is defined in the `metainfo.xml `for HDP 2.1 Stack:
-```
+
+```xml
 <metainfo>
   <versions>
     <active>true</active>
@@ -124,19 +130,22 @@ In this example, we will create a custom service called "**SAMPLESRV**", add it 
 
 #### Create and Add the Service
 
-1. On the Ambari Server, browse to the `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services` directory. In this case, we will browse to the HDP 2.0 Stack definition.
-```
-cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services
-```
+- On the Ambari Server, browse to the `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services` directory. In this case, we will browse to the HDP 2.0 Stack definition.
 
-2. Create a directory named `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/SAMPLESRV` that will contain the service definition for **SAMPLESRV**.
-```
+  ```shell
+  cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services
+  ```
+
+- Create a directory named `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/SAMPLESRV` that will contain the service definition for **SAMPLESRV**.
+
+```shell
 mkdir /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/SAMPLESRV
 cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/SAMPLESRV
 ```
 
-3. Browse to the newly created **SAMPLESRV** directory, create a `metainfo.xml` file that describes the new service.  For example:
-```
+- Browse to the newly created **SAMPLESRV** directory, create a `metainfo.xml` file that describes the new service.  For example:
+
+```xml
 <?xml version="1.0"?>
 <metainfo>
     <schemaVersion>2.0</schemaVersion>
@@ -191,73 +200,77 @@ cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/SAMPLESRV
 </metainfo>
 ```
 
-4. In the above, my service name is "**SAMPLESRV**", and it contains:
- - one MASTER component "**SAMPLESRV_MASTER**"
- - one SLAVE component "**SAMPLESRV_SLAVE**"
- - one CLIENT component "**SAMPLESRV_CLIENT**"
+- In the above, my service name is "**SAMPLESRV**", and it contains:
+  - one MASTER component "**SAMPLESRV_MASTER**"
+  - one SLAVE component "**SAMPLESRV_SLAVE**"
+  - one CLIENT component "**SAMPLESRV_CLIENT**"
 
-5. Next, let's create that command script. Create a directory for the command script `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/SAMPLESRV/package/scripts` that we designated in the service metainfo.
-```
+- Next, let's create that command script. Create a directory for the command script `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/SAMPLESRV/package/scripts` that we designated in the service metainfo.
+
+```shell
 mkdir -p /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/SAMPLESRV/package/scripts
 cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/SAMPLESRV/package/scripts
 ```
 
-6. Browse to the scripts directory and create the .py command script files.
+- Browse to the scripts directory and create the .py command script files.
+  - For example master.py file:
 
- For example master.py file:
-	```
-	import sys
-	from resource_management import *
-	class Master(Script):
-	  def install(self, env):
-	    print 'Install the Sample Srv Master';
-	  def stop(self, env):
-	    print 'Stop the Sample Srv Master';
-	  def start(self, env):
-	    print 'Start the Sample Srv Master';
-	     
-	  def status(self, env):
-	    print 'Status of the Sample Srv Master';
-	  def configure(self, env):
-	    print 'Configure the Sample Srv Master';
-	if __name__ == "__main__":
-	  Master().execute()
-	```
+  ```python
+  import sys
+  from resource_management import *
+  class Master(Script):
+    def install(self, env):
+      print 'Install the Sample Srv Master';
+    def stop(self, env):
+      print 'Stop the Sample Srv Master';
+    def start(self, env):
+      print 'Start the Sample Srv Master';
+        
+    def status(self, env):
+      print 'Status of the Sample Srv Master';
+    def configure(self, env):
+      print 'Configure the Sample Srv Master';
+  if __name__ == "__main__":
+    Master().execute()
+  ```
 
- For example slave.py file:
-	```
-	import sys
-	from resource_management import *
-	class Slave(Script):
-	  def install(self, env):
-	    print 'Install the Sample Srv Slave';
-	  def stop(self, env):
-	    print 'Stop the Sample Srv Slave';
-	  def start(self, env):
-	    print 'Start the Sample Srv Slave';
-	  def status(self, env):
-	    print 'Status of the Sample Srv Slave';
-	  def configure(self, env):
-	    print 'Configure the Sample Srv Slave';
-	if __name__ == "__main__":
-	  Slave().execute()
-	```
+  - For example slave.py file:
 
- For example sample_client.py file:
-	```
-	import sys
-	from resource_management import *
-	class SampleClient(Script):
-	  def install(self, env):
-	    print 'Install the Sample Srv Client';
-	  def configure(self, env):
-	    print 'Configure the Sample Srv Client';
-	if __name__ == "__main__":
-	  SampleClient().execute()
-	```
+  ```python
+  import sys
+  from resource_management import *
+  class Slave(Script):
+    def install(self, env):
+      print 'Install the Sample Srv Slave';
+    def stop(self, env):
+      print 'Stop the Sample Srv Slave';
+    def start(self, env):
+      print 'Start the Sample Srv Slave';
+    def status(self, env):
+      print 'Status of the Sample Srv Slave';
+    def configure(self, env):
+      print 'Configure the Sample Srv Slave';
+  if __name__ == "__main__":
+    Slave().execute()
+  ```
 
-7. Now, restart Ambari Server for this new service definition to be distributed to all the Agents in the cluster.
-```
+  - For example sample_client.py file:
+
+  ```python
+  import sys
+  from resource_management import *
+  class SampleClient(Script):
+    def install(self, env):
+      print 'Install the Sample Srv Client';
+    def configure(self, env):
+      print 'Configure the Sample Srv Client';
+  if __name__ == "__main__":
+    SampleClient().execute()
+  ```
+
+- Now, restart Ambari Server for this new service definition to be distributed to all the Agents in the cluster.
+
+```shell
 ambari-server restart
 ```
 
@@ -279,19 +292,22 @@ In this example, we will create a custom service called "TESTSRV", add it to an 
 
 #### Create and Add the Service
 
-1. On the Ambari Server, browse to the /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services directory. In this case, we will browse to the HDP 2.0 Stack definition.
-```
+- On the Ambari Server, browse to the /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services directory. In this case, we will browse to the HDP 2.0 Stack definition.
+
+```shell
 cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services
 ```
 
-2. Create a directory named /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTSRV that will contain the service definition for TESTSRV.
-```
+- Create a directory named /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTSRV that will contain the service definition for TESTSRV.
+
+```shell
 mkdir /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTSRV
 cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTSRV
 ```
 
-3. Browse to the newly created TESTSRV directory, create a metainfo.xml file that describes the new service. For example:
-```
+- Browse to the newly created TESTSRV directory, create a metainfo.xml file that describes the new service. For example:
+
+```xml
 <?xml version="1.0"?>
 <metainfo>
     <schemaVersion>2.0</schemaVersion>
@@ -334,121 +350,131 @@ cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTSRV
 </metainfo>
 ```
 
-4. In the above, my service name is "**TESTSRV**", and it contains one component "**TEST_CLIENT**" that is of component category "**CLIENT**". That client is managed via the command script `scripts/test_client.py.` Next, let's create that command script.
+- In the above, my service name is "**TESTSRV**", and it contains one component "**TEST_CLIENT**" that is of component category "**CLIENT**". That client is managed via the command script `scripts/test_client.py.` Next, let's create that command script.
 
-5. Create a directory for the command script `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTSRV/package/scripts` that we designated in the service metainfo.
-```
+- Create a directory for the command script `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTSRV/package/scripts` that we designated in the service metainfo.
+
+```shell
 mkdir -p /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTSRV/package/scripts
 cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTSRV/package/scripts
 ```
 
-6. Browse to the scripts directory and create the `test_client.py` file. For example:
-```
-	import sys
-	from resource_management import *
-	 
-	class TestClient(Script):
-	  def install(self, env):
-	    print 'Install the client';
-	  def configure(self, env):
-	    print 'Configure the client';
-	  def somethingcustom(self, env):
-	    print 'Something custom';
-	 
-	if __name__ == "__main__":
-	  TestClient().execute()
+- Browse to the scripts directory and create the `test_client.py` file. For example:
+
+```python
+import sys
+from resource_management import *
+  
+class TestClient(Script):
+  def install(self, env):
+    print 'Install the client';
+  def configure(self, env):
+    print 'Configure the client';
+  def somethingcustom(self, env):
+    print 'Something custom';
+  
+if __name__ == "__main__":
+  TestClient().execute()
 ```
 
-7. Now, restart Ambari Server for this new service definition to be distributed to all the Agents in the cluster.
-```
+- Now, restart Ambari Server for this new service definition to be distributed to all the Agents in the cluster.
+
+```shell
 ambari-server restart
 ```
 
 #### Install the Service (via the Ambari REST API)
 
-1. Add the Service to the Cluster.
-```
-	POST
-	/api/v1/clusters/MyCluster/services
-	 
-	{
-	"ServiceInfo": {
-	  "service_name":"TESTSRV"
-	  }
-	}
+- Add the Service to the Cluster.
+
+```shell
+POST
+/api/v1/clusters/MyCluster/services
+  
+{
+"ServiceInfo": {
+  "service_name":"TESTSRV"
+  }
+}
 ```
 
-2. Add the Components to the Service. In this case, add TEST_CLIENT to TESTSRV.
-```
+- Add the Components to the Service. In this case, add TEST_CLIENT to TESTSRV.
+
+```shell
 POST
 /api/v1/clusters/MyCluster/services/TESTSRV/components/TEST_CLIENT
 ```
 
-3. Install the component on all target hosts. For example, to install on c6402.ambari.apache.org and c6403.ambari.apache.org, first create the host_component resource on the hosts using POST.
-```
-	POST
-	/api/v1/clusters/MyCluster/hosts/c6402.ambari.apache.org/host_components/TEST_CLIENT
-	 
-	POST
-	/api/v1/clusters/MyCluster/hosts/c6403.ambari.apache.org/host_components/TEST_CLIENT
+- Install the component on all target hosts. For example, to install on c6402.ambari.apache.org and c6403.ambari.apache.org, first create the host_component resource on the hosts using POST.
+
+```shell
+POST
+/api/v1/clusters/MyCluster/hosts/c6402.ambari.apache.org/host_components/TEST_CLIENT
+  
+POST
+/api/v1/clusters/MyCluster/hosts/c6403.ambari.apache.org/host_components/TEST_CLIENT
 ```
 
-4. Now have Ambari install the components on all hosts. In this single command, you are instructing Ambari to install all components related to the service. This call the install() method in the command script on each host.
-```
-	PUT
-	/api/v1/clusters/MyCluster/services/TESTSRV
-	 
-	{
-	  "RequestInfo": {
-	    "context": "Install Test Srv Client"
-	  },
-	  "Body": {
-	    "ServiceInfo": {
-	      "state": "INSTALLED"
-	    }   
-	  }
-	}
+- Now have Ambari install the components on all hosts. In this single command, you are instructing Ambari to install all components related to the service. This call the install() method in the command script on each host.
+
+```shell
+PUT
+/api/v1/clusters/MyCluster/services/TESTSRV
+  
+{
+  "RequestInfo": {
+    "context": "Install Test Srv Client"
+  },
+  "Body": {
+    "ServiceInfo": {
+      "state": "INSTALLED"
+    }   
+  }
+}
 ```
    
-5. Alternatively, instead of installing all components at the same time, you can explicitly install each host component. In this example, we will explicitly install the TEST_CLIENT on c6402.ambari.apache.org:
-```
-	PUT
-	/api/v1/clusters/MyCluster/hosts/c6402.ambari.apache.org/host_components/TEST_CLIENT
-	 
-	{
-	  "RequestInfo": {
-	    "context":"Install Test Srv Client"
-	  },
-	  "Body": {
-	    "HostRoles": {
-	      "state":"INSTALLED"
-	    }
-	  }
-	}
+- Alternatively, instead of installing all components at the same time, you can explicitly install each host component. In this example, we will explicitly install the TEST_CLIENT on c6402.ambari.apache.org:
+
+```shell
+PUT
+/api/v1/clusters/MyCluster/hosts/c6402.ambari.apache.org/host_components/TEST_CLIENT
+  
+{
+  "RequestInfo": {
+    "context":"Install Test Srv Client"
+  },
+  "Body": {
+    "HostRoles": {
+      "state":"INSTALLED"
+    }
+  }
+}
 ```
 
-6. Use the following to configure the client on the host. This will end up calling the configure() method in the command script.
-```
-	POST
-	/api/v1/clusters/MyCluster/requests
-	  
-	{
-	  "RequestInfo" : {
-	    "command" : "CONFIGURE",
-	    "context" : "Config Test Srv Client"
-	  },
-	  "Requests/resource_filters": [{
-	    "service_name" : "TESTSRV",
-	    "component_name" : "TEST_CLIENT",
-	    "hosts" : "c6403.ambari.apache.org"
-	  }]
-	}
+- Use the following to configure the client on the host. This will end up calling the configure() method in the command script.
+
+```shell
+POST
+/api/v1/clusters/MyCluster/requests
+  
+{
+  "RequestInfo" : {
+    "command" : "CONFIGURE",
+    "context" : "Config Test Srv Client"
+  },
+  "Requests/resource_filters": [{
+    "service_name" : "TESTSRV",
+    "component_name" : "TEST_CLIENT",
+    "hosts" : "c6403.ambari.apache.org"
+  }]
+}
 ```
 
-7. If you want to see which hosts the component is installed.
-```
-	GET
-	/api/v1/clusters/MyCluster/components/TEST_CLIENT
+- If you want to see which hosts the component is installed.
+
+```shell
+GET
+/api/v1/clusters/MyCluster/components/TEST_CLIENT
 ```
 
 #### Install the Service (via Ambari Web "Add Services")
@@ -468,19 +494,22 @@ In this example, we will create a custom service called "**TESTCONFIGSRV**" and 
 
 #### Create and Add the Service to the Stack
 
-1. On the Ambari Server, browse to the `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services` directory. In this case, we will browse to the HDP 2.0 Stack definition.
-```
+- On the Ambari Server, browse to the `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services` directory. In this case, we will browse to the HDP 2.0 Stack definition.
+
+```shell
 cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services
 ```
 
-2. Create a directory named `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV` that will contain the service definition for **TESTCONFIGSRV**.
-```
+- Create a directory named `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV` that will contain the service definition for **TESTCONFIGSRV**.
+
+```shell
 mkdir /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV
 cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV
 ```
 
-3. Browse to the newly created **TESTCONFIGSRV** directory, create a `metainfo.xml` file that describes the new service. For example:
-```
+- Browse to the newly created **TESTCONFIGSRV** directory, create a `metainfo.xml` file that describes the new service. For example:
+
+```xml
 <?xml version="1.0"?>
 <metainfo>
     <schemaVersion>2.0</schemaVersion>
@@ -513,56 +542,62 @@ cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV
 </metainfo>
 ```
 
-4. In the above, my service name is "**TESTCONFIGSRV**", and it contains one component "**TESTCONFIG_CLIENT**" that is of component category "**CLIENT**". That client is managed via the command script `scripts/test_client.py`. Next, let's create that command script.
+- In the above, my service name is "**TESTCONFIGSRV**", and it contains one component "**TESTCONFIG_CLIENT**" that is of component category "**CLIENT**". That client is managed via the command script `scripts/test_client.py`. Next, let's create that command script.
 
-5. Create a directory for the command script `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV/package/scripts` that we designated in the service metainfo <commandScript>.
-```
+- Create a directory for the command script `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV/package/scripts` that we designated in the service metainfo <commandScript>.
+
+```shell
 mkdir -p /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV/package/scripts
 cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV/package/scripts
 ```
 
-6. Browse to the scripts directory and create the `test_client.py` file. For example:
-```
-	import sys
-	from resource_management import *
-	 
-	class TestClient(Script):
-	  def install(self, env):
-	    print 'Install the config client';
-	  def configure(self, env):
-	    print 'Configure the config client';
-	 
-	if __name__ == "__main__":
-	  TestClient().execute()
+- Browse to the scripts directory and create the `test_client.py` file. For example:
+
+```python
+import sys
+from resource_management import *
+  
+class TestClient(Script):
+  def install(self, env):
+    print 'Install the config client';
+  def configure(self, env):
+    print 'Configure the config client';
+  
+if __name__ == "__main__":
+  TestClient().execute()
 ```
 
-7. Now let's define a config type for this service. Create a directory for the configuration dictionary file `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV/configuration`.
-```
+- Now let's define a config type for this service. Create a directory for the configuration dictionary file `/var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV/configuration`.
+
+```shell
 mkdir -p /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV/configuration
 cd /var/lib/ambari-server/resources/stacks/HDP/2.0.6/services/TESTCONFIGSRV/configuration
 ```
 
-8. Browse to the configuration directory and create the `test-config.xml` file. For example:
-```
-	<?xml version="1.0"?>
-	<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-	 
-	<configuration>
-	  <property>
-	    <name>some.test.property</name>
-	    <value>this.is.the.default.value</value>
-	    <description>This is a kool description.</description>
-	 </property>
-	</configuration>
+- Browse to the configuration directory and create the `test-config.xml` file. For example:
+
+```xml
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+  
+<configuration>
+  <property>
+    <name>some.test.property</name>
+    <value>this.is.the.default.value</value>
+    <description>This is a kool description.</description>
+  </property>
+</configuration>
 ```
 
-9. Now, restart Ambari Server for this new service definition to be distributed to all the Agents in the cluster.
-```
+- Now, restart Ambari Server for this new service definition to be distributed to all the Agents in the cluster.
+
+```shell
 ambari-server restart
 ```
 
 ### Useful Links
-- https://cwiki.apache.org/confluence/display/AMBARI/Custom+Services
-- https://cwiki.apache.org/confluence/display/AMBARI/Installation+Guide+for+Ambari+2.7.3
-- https://docs.hortonworks.com/HDPDocuments/Ambari-2.7.1.0/bk_ambari-installation-ppc/content/setting_up_a_local_repository_with_no_internet_access.html
-- https://www.ibm.com/developerworks/cn/opensource/os-cn-bigdata-ambari3/index.html
+
+- <https://cwiki.apache.org/confluence/display/AMBARI/Custom+Services>
+- <https://cwiki.apache.org/confluence/display/AMBARI/Installation+Guide+for+Ambari+2.7.3>
+- <https://docs.hortonworks.com/HDPDocuments/Ambari-2.7.1.0/bk_ambari-installation-ppc/content/setting_up_a_local_repository_with_no_internet_access.html>
+- <https://www.ibm.com/developerworks/cn/opensource/os-cn-bigdata-ambari3/index.html>

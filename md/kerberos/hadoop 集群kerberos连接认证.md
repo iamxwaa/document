@@ -4,18 +4,19 @@
 
 ## 设置系统环境变量
 
-```
+```java
 System.setProperty("java.security.krb5.conf", PropertiesTools.getKerberosValue("krb5.conf"));
 System.setProperty("java.security.krb5.realm", PropertiesTools.getKerberosValue("krb5.realm"));
 System.setProperty("java.security.krb5.kdc", PropertiesTools.getKerberosValue("krb5.kdc"));
 System.setProperty("java.security.auth.useSubjectCredsOnly", "false");
 System.setProperty("java.security.krb5.debug", "true");
 ```
+
 > 设置java.security.krb5.conf后可以不设置java.security.krb5.realm和java.security.krb5.kdc,如果设置了，则两个属性都要设置
 
 ## hdfs认证
 
-```
+```java
 Configuration conf = new Configuration();
 //获取hdfs-site.xml和core-site.xml的文件路径
 String hdfs = PropertiesTools.getKerberosValue("hdfs.site");
@@ -26,7 +27,7 @@ conf.addResource(new FileInputStream(new File(core)), "core-site.xml");
 UserGroupInformation.setConfiguration(conf);
 //填写认证账号以及票据文件路径
 UserGroupInformation.loginUserFromKeytab(PropertiesTools.getKerberosValue("keytab.user.hadoop"),
-		PropertiesTools.getKerberosValue("keytab.hadoop"));
+        PropertiesTools.getKerberosValue("keytab.hadoop"));
 
 FileSystem fs = FileSystem.get(conf);
 ...
@@ -34,7 +35,7 @@ FileSystem fs = FileSystem.get(conf);
 
 ## hbase认证
 
-```
+```java
 Configuration conf = new Configuration();
 conf.set("hbase.zookeeper.property.clientPort", ZK_PORT);
 conf.set("hbase.zookeeper.quorum", ZK_QUORUM);
@@ -47,7 +48,7 @@ conf.set("kerberos.principal", PropertiesTools.getKerberosValue("keytab.user.hba
 
 UserGroupInformation.setConfiguration(conf);
 UserGroupInformation.loginUserFromKeytab(PropertiesTools.getKerberosValue("keytab.user.hbase"),
-		PropertiesTools.getKerberosValue("keytab.hbase"));
+        PropertiesTools.getKerberosValue("keytab.hbase"));
 
 Connection conn = ConnectionFactory.createConnection(conf);
 ...
@@ -55,7 +56,7 @@ Connection conn = ConnectionFactory.createConnection(conf);
 
 ## yarn认证
 
-```
+```java
 YarnClient client = YarnClient.createYarnClient();
 
 Configuration conf = new Configuration();
@@ -68,7 +69,7 @@ conf.addResource(new FileInputStream(new File(core)), "core-site.xml");
 
 UserGroupInformation.setConfiguration(conf);
 UserGroupInformation.loginUserFromKeytab(PropertiesTools.getKerberosValue("keytab.user.yarn"),
-		PropertiesTools.getKerberosValue("keytab.yarn"));
+        PropertiesTools.getKerberosValue("keytab.yarn"));
 
 client.init(conf);
 client.start();
@@ -77,7 +78,7 @@ client.start();
 
 ## hive认证
 
-```
+```java
 jdbc:hive2://vrv145:10000/bap;principal=hive/_HOST@me
 ```
 
@@ -85,24 +86,24 @@ jdbc:hive2://vrv145:10000/bap;principal=hive/_HOST@me
 
 - 使用jaas认证
 
-```
+```conf
 jass.conf
 
 OzClient {
-	com.sun.security.auth.module.Krb5LoginModule required
-	useKeyTab=true
-	keyTab="f:/kerberos/oozie.keytab"
-	principal="oozie/vrv148@me"
-	useTicketCache=false
-	storeKey=true
-	doNotPrompt=true
-	debug=true;
+    com.sun.security.auth.module.Krb5LoginModule required
+    useKeyTab=true
+    keyTab="f:/kerberos/oozie.keytab"
+    principal="oozie/vrv148@me"
+    useTicketCache=false
+    storeKey=true
+    doNotPrompt=true
+    debug=true;
 };
 ```
 
 - 使用AuthOozieClient获取客户端连接,代码如下
 
-```
+```java
 package com.vrv.vap.auth;
 
 import java.security.PrivilegedAction;
@@ -124,64 +125,64 @@ import com.vrv.vap.client.OzClient;
 *         2017年7月18日
 */
 public class OozieKerberosAuthClient<T> {
-	private LoginContext loginContext;
-	private Subject subject;
-	private T result;
+    private LoginContext loginContext;
+    private Subject subject;
+    private T result;
 
-	/**
-	* 读取jaas文件配置并登陆
-	* 
-	* @return
-	* @throws LoginException
-	*/
-	public OozieKerberosAuthClient<T> login() throws LoginException {
-		if (KerberosAuth.KERBEROS_SWITCH) {
-			loginContext = new LoginContext("OzClient");
-			loginContext.login();
-			this.subject = loginContext.getSubject();
-		}
-		return this;
-	}
+    /**
+    * 读取jaas文件配置并登陆
+    * 
+    * @return
+    * @throws LoginException
+    */
+    public OozieKerberosAuthClient<T> login() throws LoginException {
+        if (KerberosAuth.KERBEROS_SWITCH) {
+            loginContext = new LoginContext("OzClient");
+            loginContext.login();
+            this.subject = loginContext.getSubject();
+        }
+        return this;
+    }
 
-	/**
-	* 执行任务
-	* 
-	* @param action
-	* @return
-	*/
-	public OozieKerberosAuthClient<T> run(PrivilegedAction<T> action) {
-		if (KerberosAuth.KERBEROS_SWITCH) {
-			this.result = Subject.doAs(this.subject, action);
-		} else {
-			this.result = action.run();
-		}
-		return this;
-	}
+    /**
+    * 执行任务
+    * 
+    * @param action
+    * @return
+    */
+    public OozieKerberosAuthClient<T> run(PrivilegedAction<T> action) {
+        if (KerberosAuth.KERBEROS_SWITCH) {
+            this.result = Subject.doAs(this.subject, action);
+        } else {
+            this.result = action.run();
+        }
+        return this;
+    }
 
-	/**
-	* 获取结果并退出登陆
-	* 
-	* @return
-	* @throws LoginException
-	*/
-	public T getResult() throws LoginException {
-		if (KerberosAuth.KERBEROS_SWITCH) {
-			loginContext.logout();
-		}
-		return this.result;
-	}
+    /**
+    * 获取结果并退出登陆
+    * 
+    * @return
+    * @throws LoginException
+    */
+    public T getResult() throws LoginException {
+        if (KerberosAuth.KERBEROS_SWITCH) {
+            loginContext.logout();
+        }
+        return this.result;
+    }
 
-	/**	
-	* 获取连接客户端
-	* 
-	* @return
-	*/
-	public OozieClient getOozieClient() {
-		OozieClient client = new OozieClient(OzClient.OZ_URL);
-		if (KerberosAuth.KERBEROS_SWITCH) {
-			client = new AuthOozieClient(OzClient.OZ_URL);
-		}
-		return client;
-	}
+    /**
+    * 获取连接客户端
+    * 
+    * @return
+    */
+    public OozieClient getOozieClient() {
+        OozieClient client = new OozieClient(OzClient.OZ_URL);
+        if (KerberosAuth.KERBEROS_SWITCH) {
+            client = new AuthOozieClient(OzClient.OZ_URL);
+        }
+        return client;
+    }
 }
 ```

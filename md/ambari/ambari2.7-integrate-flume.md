@@ -1,41 +1,50 @@
- # ambari 2.7 服务集成
+# ambari 2.7 服务集成
+
 ---------
 
 ## 组件集成
 
 - 制作自己组件的RPM包 vap_flume-2.0-1.el7.centos.x86_64.rpm
 - 安装 createrepo
-```
+
+```shell
 yum install createrepo
 ```
+
 - 将制作的RPM包放在 /var/www/html/HDP/centos7/3.0.1.0-187/vap_flume 下
 - 删除 /var/www/html/HDP/centos7/3.0.1.0-187/repodata
 - 重新生成 repodata
-```
+
+```shell
 cd /var/www/html/HDP/centos7/3.0.1.0-187
 createrepo ./
 ```
+
 - 更新 yum 源
-```
+
+```shell
 yum clean all
 yum repolist
 ```
+
 - 验证是否添加成功
-> [root@public-repo-1 3.0.1.0-187]# yum search vap_flume<br>
-> Loaded plugins: fastestmirror<br>
-> Loading mirror speeds from cached hostfile<br>
->  * base: mirrors.cn99.com<br>
->  * extras: mirrors.163.com<br>
->  * updates: mirrors.njupt.edu.cn<br>
-> ====================================== N/S matched: vap_flume ======================================<br>
-> vap_flume.x86_64 : vrv audit platform flume<br>
+
+> [root@public-repo-1 3.0.1.0-187]# yum search vap_flume
+> Loaded plugins: fastestmirror
+> Loading mirror speeds from cached hostfile
+>\* base: mirrors.cn99.com
+>\* extras: mirrors.163.com
+>\* updates: mirrors.njupt.edu.cn
+> ====================================== N/S matched: vap_flume ======================================
+> vap_flume.x86_64 : vrv audit platform flume
 > 
->   Name and summary matches only, use "search all" for everything.<br>
+>Name and summary matches only, use "search all" for everything.
 
 ## ambari service 集成
+
 创建一个service文件夹，目录结构如下
 
-```
+```shell
 VAPFLUME  #service名称,必须大写
 ├─configuration  #配置文件目录
 ├─package  #相关脚本目录
@@ -45,7 +54,7 @@ VAPFLUME  #service名称,必须大写
 
 - VAPFLUME 下创建 metainfo.xml
 
-```
+```xml
 <?xml version="1.0"?>
 <metainfo>
     <schemaVersion>2.0</schemaVersion>
@@ -98,7 +107,7 @@ VAPFLUME  #service名称,必须大写
 
 - VAPFLUME/configuration 下创建 vap-flume.xml
 
-```
+```xml
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
  
@@ -133,7 +142,7 @@ VAPFLUME  #service名称,必须大写
 
 - VAPFLUME/package/scripts 下创建 params.
 
-```
+```python
 #!/usr/bin/env python
 
 import sys, os 
@@ -154,7 +163,7 @@ app_run = app_shell
 
 - VAPFLUME/package/scripts 下创建 vap-flume.py
 
-```
+```python
 #!/usr/bin/env python
 
 import sys, os 
@@ -211,7 +220,7 @@ if __name__ == "__main__":
 
 - VAPFLUME/package/files 下创建 start-ambari-flume.sh
 
-```
+```shell
 #!/bin/bash
 export FLUME_UI_HOME=/usr/hdp/current/vap-flume
 export FLUME_UI_APP=vap-flume-ui.jar
@@ -271,25 +280,25 @@ f_check() {
   if [ -f "$appath" ] ;then
     if [ -r "$appath" -a -w "$appath" -a -x "$appath" ] ;then
       echo "check $appath        ------------------OK"
-	else
-	  chmod 755 "$appath"
-	  echo "fix $appath        ------------------OK"
-	fi
   else
-  	echo "check $appath        ------------------FAIL"
-  	return 0
+    chmod 755 "$appath"
+    echo "fix $appath        ------------------OK"
+  fi
+  else
+    echo "check $appath        ------------------FAIL"
+    return 0
   fi
   appath2=$FLUME_UI_HOME/flume/bin/flume-ng
   if [ -f "$appath2" ] ;then
     if [ -r "$appath2" -a -w "$appath2" -a -x "$appath2" ] ;then
       echo "check $appath2        ------------------OK"
-	else
-	  chmod 755 "$appath2"
-	  echo "fix $appath2        ------------------OK"
-	fi
   else
-  	echo "check $appath2        ------------------FAIL"
-  	return 0
+    chmod 755 "$appath2"
+    echo "fix $appath2        ------------------OK"
+  fi
+  else
+    echo "check $appath2        ------------------FAIL"
+    return 0
   fi
   return 1
 }
@@ -304,7 +313,7 @@ f_start() {
         mkdir -p $FLUME_UI_HOME/logs
       fi
       args="-Xms$1m -Xmx$1m -DFLUME_UI_HOME=$FLUME_UI_HOME -DFLUME_UI_PORT=$2 -DMAX_ALLOW_MEM=$3 -DAUTO_RESTART=$4 -DIS_AMBARI=true -DFLUME_CONFIG_HOME=/etc/vap-flume"
-	    java $args -jar $FLUME_UI_HOME/$FLUME_UI_APP > /dev/null &
+      java $args -jar $FLUME_UI_HOME/$FLUME_UI_APP > /dev/null &
       fpid=$!
       if [ ! -d "$FLUME_PID_PATH" ];then
         mkdir -p $FLUME_PID_PATH
@@ -373,7 +382,7 @@ case "$cmd" in
   ;;
   stop)
     if [ "$2" = "--force" ] ;then
-	    sign=9
+      sign=9
     else
       sign=15
     fi
