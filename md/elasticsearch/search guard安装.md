@@ -7,7 +7,7 @@
 - 在线安装:
   - 执行以下命令
 
-   ```
+   ```shell
    bin/elasticsearch-plugin install -b com.floragunn:search-guard-6:<version>
    ```
 
@@ -16,7 +16,7 @@
  
   - 执行以下命令
    
-   ```
+   ```shell
    bin/elasticsearch-plugin install -b file:///path/to/search-guard-6-<version>.zip
    ```
 
@@ -40,7 +40,7 @@
 
   - 解压缩
 
-   ```
+   ```shell
    unzip search-guard-tlstool-1.5.zip
    ```
 
@@ -48,53 +48,56 @@
 
   - 复制而配置模板
 
-   ```
+   ```shell
    cp search-guard-6/config/template.yml search-guard-6/config/tlsconfig.yml
    ```
   
   - 修改tlsconfig.yml配置,详见[表2](#table2)
   
   - 生成证书
-   ```
+  
+   ```shell
    cd search-guard-6/tools
    ./sgtlstool.sh -c ../config/tlsconfig.yml -ca -crt
    ```
 
   - 在search-guard-6/tools/out文件夹下可以找到生成的证书相关文件
-	 - client-certificates.readme
-	 - root-ca.key //Private key of the Root CA
-	 - root-ca.pem //Root certificate
-	 - signing-ca.key
-	 - signing-ca.pem
-	 - vrv218_client.key
-	 - vrv218_client.pem
-	 - vrv218_node_elasticsearch_config_snippet.yml
-	 - vrv218_node_http.key
-	 - vrv218_node_http.pem
-	 - vrv218_node.key
-	 - vrv218_node.pem
+    - client-certificates.readme
+    - root-ca.key //Private key of the Root CA
+    - root-ca.pem //Root certificate
+    - signing-ca.key
+    - signing-ca.pem
+    - vrv218_client.key
+    - vrv218_client.pem
+    - vrv218_node_elasticsearch_config_snippet.yml
+    - vrv218_node_http.key
+    - vrv218_node_http.pem
+    - vrv218_node.key
+    - vrv218_node.pem
 
-###配置elasticsearch
+### 配置elasticsearch
+
 - 将生成的文件复制到es/config文件夹下
 
-```
+```shell
 mv out/* ../../../config/
 ```
 
 - 合并vrv218_node_elasticsearch_config_snippet.yml中的配置到es的配置中
 
-```
+```shell
 cat vrv218_node_elasticsearch_config_snippet.yml >> elasticsearch.yml
 ```
 
 - 关闭search guard企业版功能
 
-```
+```shell
 echo searchguard.enterprise_modules_enabled: false >> elasticsearch.yml
 ```
+
 - 启动sgadmin
 
-```
+```shell
 cd search-guard-6/tools
 ./sgadmin.sh 
 -cd ../sgconfig/  #search guard配置文件目录
@@ -110,7 +113,7 @@ cd search-guard-6/tools
 输出以下信息表示成功,后续访问es需要使用**https**协议。
 > 修改elasticsearch.yml，设置searchguard.ssl.http.enabled: false可以关闭https访问
 
-```
+```shell
 Search Guard Admin v6
 Will connect to localhost:9330 ... done
 ES Config path is not set
@@ -152,32 +155,33 @@ Done with success
 - 访问 https://192.168.119.218:9200 会提示输入账号密码,输入admin/admin即可
 
 ## 权限配置
+
 - 创建账号
 
   - 使用search-guard-6/tools/hash.sh生成密码
 
-   ```
+   ```shell
    ./hash.sh -p 123456
    $2y$12$gFHRiNGzli7HEhK1J56FwebOupUX97reBtb4hHXYXB9rTPSRACay6
    ```
   
   - 修改search-guard-6/sgconfig/sg_internal_users.yml
 
-   ```
+   ```shell
       #账号
       vrv218:
       readonly: true
       #填写hash.sh生成的密码123456
       hash: $2y$12$gFHRiNGzli7HEhK1J56FwebOupUX97reBtb4hHXYXB9rTPSRACay6
       roles: //配置角色
-         - admin	
+         - admin
    ```
 
   - 重新执行sgadmin.sh更新配置
 
 - 配置角色
 
-   ```
+   ```shell
    ...
    ```
 
@@ -197,7 +201,7 @@ Name|	Description
 
 ### table2
 
-```
+```yml
 ###
 ### Self-generated certificate authority
 ### 

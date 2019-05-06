@@ -1,8 +1,10 @@
 # scala
 
  Scala 是一种函数对象混合的语言，具有一些强大的优点：
-  - Scala 可编译为 Java 字节码，这意味着它在 JVM 上运行。除了允许继续利用丰富的 Java 开源生态系统之外，Scala 还可以集成到现有的 IT 环境中，无需进行迁移。
-  - Scala 基于 Haskell 和 ML 的函数原则，大量借鉴了 Java 程序员钟爱的面向对象概念。因此，它可以将两个领域的优势混合在一起，从而提供了显著的优点，而且不会失去我们一直依赖的熟悉的技术。
+
+- Scala 可编译为 Java 字节码，这意味着它在 JVM 上运行。除了允许继续利用丰富的 Java 开源生态系统之外，Scala 还可以集成到现有的 IT 环境中，无需进行迁移。
+
+- Scala 基于 Haskell 和 ML 的函数原则，大量借鉴了 Java 程序员钟爱的面向对象概念。因此，它可以将两个领域的优势混合在一起，从而提供了显著的优点，而且不会失去我们一直依赖的熟悉的技术。
 
 ## 优势
 
@@ -107,7 +109,7 @@ scala通过定义伴生对象，分离静态成员，类似于java中的static�
 
 - 配置
 
-  ```
+  ```shell
   cd ~
   vi .bash_profile
   export SCALA_HOME=/home/xw/scala-2.11.8
@@ -123,7 +125,7 @@ scala通过定义伴生对象，分离静态成员，类似于java中的static�
 
 #### Hello World
 
-```
+```scala
 object Hw {
   def main(args: Array[String]): Unit = {
     println("hello world")
@@ -134,7 +136,7 @@ object Hw {
 
 #### 隐式转换
 
-```
+```scala
 object Impli2 {
 
   class Terminal(path: String, f: String => Unit) {
@@ -146,13 +148,13 @@ object Impli2 {
   }
 
   implicit def cov(path: String) = new Terminal(path)
-	implicit def cov(path: Unit) = new Terminal2
+  implicit def cov(path: Unit) = new Terminal2
 
   class Terminal2{
-	  def lineToArray = (x: String) => {
-		  val arr = x.split(" ")
-				  printf("%s:%s:%s:%s\n",arr(0),arr(1),arr(2),arr(3))
-	  }
+    def lineToArray = (x: String) => {
+      val arr = x.split(" ")
+          printf("%s:%s:%s:%s\n",arr(0),arr(1),arr(2),arr(3))
+    }
   }
   
   def main(args: Array[String]): Unit = {
@@ -164,7 +166,8 @@ object Impli2 {
 ```
 
 #### actor模式
-````
+
+````scala
 object Akka3 {
 
   def main(args: Array[String]): Unit = {
@@ -243,6 +246,7 @@ object Akka3 {
 ````
 
 ### 参考资料
-1. http://developer.51cto.com/art/200906/127830.htm
-2. http://www.ibm.com/developerworks/cn/java/j-scala/
-3. http://www.scala-lang.org/api/current/
+
+1. <http://developer.51cto.com/art/200906/127830.htm>
+2. <http://www.ibm.com/developerworks/cn/java/j-scala/>
+3. <http://www.scala-lang.org/api/current/>
