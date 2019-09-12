@@ -149,6 +149,32 @@ public class FlumeAvroPageHandler extends FlumeAvroBaseHandler {
 }
 ```
 
+- GrantRun.scala
+
+需要权限执行的代码调用此类执行
+
+```scala
+object GrantRun {
+  try {
+    val perm = this.getClass.getClassLoader.loadClass("org.elasticsearch.SpecialPermission").newInstance()
+    val sm = System.getSecurityManager()
+    if (sm != null) {
+      sm.checkPermission(perm.asInstanceOf[Permission])
+    }
+  } catch {
+    case _: ClassNotFoundException =>
+  }
+
+  def apply[T](f: () => T): T = {
+    AccessController.doPrivileged(new PrivilegedAction[T] {
+      override def run(): T = {
+        f()
+      }
+    })
+  }
+}
+```
+
 ### 安装
 
 ```bash
