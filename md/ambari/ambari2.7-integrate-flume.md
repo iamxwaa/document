@@ -1,4 +1,4 @@
-# ambari 2.7 服务集成
+# ambari 2.7 flume集成
 
 ---------
 
