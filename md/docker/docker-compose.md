@@ -2,6 +2,14 @@
 
 --------------
 
+## 安装
+
+```bash
+sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+```
+
 ## 样例
 
 ```yml
@@ -265,7 +273,7 @@ stop_signal: SIGUSR1
 ```yml
 volumes:
   - /var/lib/mysql ##容器内创建
-  - /opt/data:/var/lib/mysql ##容器内:宿主机
+  - /opt/data:/var/lib/mysql ##宿主机:容器内
   - ~/configs:/etc/configs/:ro ##只读
 ```
 
