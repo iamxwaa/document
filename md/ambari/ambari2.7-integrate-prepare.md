@@ -156,6 +156,13 @@ systemctl start httpd
 systemctl enable httpd
 ```
 
+- 修改打开文件数
+
+```shell
+echo "* soft nofile 65535" >> /etc/security/limits.conf
+echo "* hard nofile 65535" >> /etc/security/limits.conf
+```
+
 - 配置 ambari yum 源
 
 在 /etc/yum.repos.d 创建 ambari.repo(**文件名不能修改**), 写入以下内容
