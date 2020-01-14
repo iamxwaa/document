@@ -5,8 +5,9 @@
 依赖命令
 
 ```shell
-rpmbuild
-rpmdevtool
+#rpmbuild
+#rpmdevtool
+sudo yum install -y rpm-build rpmdevtools
 ```
 
 打包命令
@@ -115,3 +116,8 @@ fi
 %postun
 rm -rf %_v_path/vap-flume/
 ```
+
+参考资料
+- [https://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/Packagers_Guide/chap-Packagers_Guide-Spec_File_Reference-Preamble.html]
+- [http://ftp.rpm.org/max-rpm/s1-rpm-build-creating-spec-file.html]
+- [https://blog.csdn.net/u012373815/article/details/73257754]
