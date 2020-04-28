@@ -16,15 +16,15 @@
 
 - 数据流模型  
   - 一个flume event被定义为一个数据流单元, 它具有字节有效负载和一组可选的字符串属性。flume agent是一个 (JVM) 进程, 它是作为事件从外部数据源流向下一个目标中转的组件。  
-  ![t1](./UserGuide_image00.png)  
+  ![t1](./assets/UserGuide_image00.png)  
   
   - flume使用外部源 (如 web 服务器) 来给它传递事件。外部源以目标flume识别的格式向flume发送event。
     - 例如: 一个 Avro 的flume源可以用来接收来自 Avro 客户端或其他flume agent的 Avro event, 从 Avro 接收器发送event。一个类似的流程可以定义使用thrift flume源接从一个thrift flume sink或flume thrift rpc client或任意语言编写的thrift client获取数据。当flume source接收到一个event时, 它会将它存储到一个或多个channel中。该channel被动存储数据, 直到它被flume sink消费掉。file channel-它由本地文件系统支持。sink从channel消费数据, 并将其放入外部存储库 (如 HDFS), 或将其转发到下一个flume agent(下一跃点)中。给定agent内的source和sink从channel获取数据的过程中是异步的。
-  ![t2](./UserGuide_image01.png) 
+  ![t2](./assets/UserGuide_image01.png) 
 
 - 混合数据流  
 flume允许用户构建多条数据流, 在这些流中, event在到达最终目的地之前通过多个agent进行移动。它还允许扇入和扇出流、上下文路由和备份路由 (故障转移) 来进行故障agent的数据转移。  
-  ![t3](./UserGuide_image02.png)  
+  ![t3](./assets/UserGuide_image02.png)  
 
 - 可靠性  
   - event在每个agent的channel中存储。然后将event传递到下一个agent或终端存储库 (如 HDFS)。仅在将这些event在下一个agent channel或终端存储库存储后, 才会从channel中删除。
@@ -99,10 +99,10 @@ event存储在channel中，用来在失败的时候恢复。flume支持由本地
   ```  
 
 - 启动一个agent `bin/flume-ng agent --conf conf --conf-file example.conf --name a1 -Dflume.root.logger=INFO,console`
-![e1](./TIM截图20180111144724.png) 
+![e1](./assets/TIM截图20180111144724.png) 
 
 - 数据入库到es中  
-![e2](./TIM截图20180111111213.png)  
+![e2](./assets/TIM截图20180111111213.png)  
 
 ## 与 logstash 对比
 
