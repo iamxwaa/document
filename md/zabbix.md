@@ -54,4 +54,3 @@ systemctl restart zabbix-server zabbix-agent httpd
 - 访问页面地址
 
 <http://localhost/zabbix>
-

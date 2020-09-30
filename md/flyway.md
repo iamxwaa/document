@@ -81,7 +81,7 @@ flyway {
 
     ```shell
       双"_"  脚本描述     后缀".sql"
-       ↓		↓             ↓
+       ↓      ↓             ↓
     V1__Create_person_table.sql
     ↑
     版本(如V1 V1.1 V1.2 V2 V2.1 V2.1.1 ...)

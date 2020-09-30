@@ -152,7 +152,7 @@ Will update 'sg/actiongroups' with ../sgconfig/sg_action_groups.yml
 Done with success
 ```
 
-- 访问 https://192.168.119.218:9200 会提示输入账号密码,输入admin/admin即可
+- 访问 [https://192.168.119.218:9200](!https://192.168.119.218:9200) 会提示输入账号密码,输入admin/admin即可
 
 ## 权限配置
 
@@ -189,15 +189,15 @@ Done with success
 
 ### table1
 
-Name|	Description
+Name|Description
 --|--
--c,–config|	Relative or absolute path to the configuration file. Required.
--t,–target|	Relative or absolute path to the output directory. Optional, default: out
--v,–verbose|	Enable detailed output, default: false
--f,–force|	Force certificate generation despite of validation errors. default: false
--o,–overwrite|	Overwrite existing node-, client and admin certificates if they are already present. default: false
--ca,–create-ca|	Create new Root and Intermediate CAs
--crt,–create-cert|	Create certificates using an existing or newly created local certificate authority
+-c,–config|Relative or absolute path to the configuration file. Required.
+-t,–target|Relative or absolute path to the output directory. Optional, default: out
+-v,–verbose|Enable detailed output, default: false
+-f,–force|Force certificate generation despite of validation errors. default: false
+-o,–overwrite|Overwrite existing node-, client and admin certificates if they are already present. default: false
+-ca,–create-ca|Create new Root and Intermediate CAs
+-crt,–create-cert|Create certificates using an existing or newly created local certificate authority
 
 ### table2
 
