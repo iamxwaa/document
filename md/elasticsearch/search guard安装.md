@@ -113,7 +113,7 @@ cd search-guard-6/tools
 输出以下信息表示成功,后续访问es需要使用**https**协议。
 > 修改elasticsearch.yml，设置searchguard.ssl.http.enabled: false可以关闭https访问
 
-```shell
+```bash
 Search Guard Admin v6
 Will connect to localhost:9330 ... done
 ES Config path is not set

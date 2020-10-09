@@ -153,7 +153,7 @@ ERROR:
 No query specified
 ```
 
-> 有以下两个配置表示启动成功
+> 有以下两个属性表示启动成功
 Slave_IO_Running: Yes
 Slave_SQL_Running: Yes
 
