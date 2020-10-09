@@ -1,4 +1,4 @@
-# Shardingphere JDBC 使用说明
+# Shardingsphere JDBC 使用说明
 
 ------------
 

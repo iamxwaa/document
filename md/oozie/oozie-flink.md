@@ -19,7 +19,7 @@ export HADOOP_CLASSPATH=$HADOOP_HOME/lib/*:$VHDP_HOME/hadoop/*:$VHDP_HOME/hadoop
 #!/bin/bash
 
 export HDP_HOME=$HDP_HOME
-export HADOOP_HOME=HDP_HOME/hadoop
+export HADOOP_HOME=$HDP_HOME/hadoop
 export HADOOP_CLASSPATH=$HADOOP_HOME/lib/*:$HDP_HOME/hadoop/*:$HDP_HOME/hadoop-yarn/*:$HDP_HOME/hadoop-hdfs/*:$HDP_HOME/hadoop-mapreduce/*:$HDP_HOME/hadoop-yarn/lib/*:$HDP_HOME/hadoop-hdfs/lib/*:$HDP_HOME/hadoop-mapreduce/lib/*
 export FLINK_CONF_DIR=$FLINK_HOME/conf
 
