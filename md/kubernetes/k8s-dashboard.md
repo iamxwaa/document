@@ -62,7 +62,7 @@ dashboard-metrics-scraper-7b59f7d4df-8n9dk   1/1     Running   0          14m
 kubernetes-dashboard-665f4c5ff-q52ng         1/1     Running   0          14m
 ```
 
-- 创建访问token
+- 创建登录用户
 
 创建dashboard-adminuser.yaml
 
@@ -90,7 +90,7 @@ subjects:
 EOF
 ```
 
-创建登录用户`kubectl apply -f dashboard-adminuser.yaml`
+生成登录用户`kubectl apply -f dashboard-adminuser.yaml`
 
 获取token，`kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')`
 
