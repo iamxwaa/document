@@ -69,6 +69,14 @@ net.bridge.bridge-nf-call-iptables = 1
 Cgroup Driver: systemd
 ```
 
+- 修改 --selinux-enabled为false
+
+```bash
+vi /etc/sysconfig/docker
+
+OPTIONS='--selinux-enabled=false --log-driver=journald --signature-verification=false'
+```
+
 ## 安装kubernetses
 
 > 没有特殊说明，则各个步骤需要在每台服务器上都执行
