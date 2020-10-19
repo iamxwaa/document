@@ -134,6 +134,24 @@ other_args='--selinux-enabled --insecure-registry 192.168.118.147:5000'
 { "insecure-registries":["192.168.119.218:2375"], "registry-mirrors": ["https://dftbcros.mirror.aliyuncs.com"] }
 ```
 
+或
+
+```bash
+cat <<EOF > /etc/docker/daemon.json
+{
+    "registry-mirrors": [
+        "https://no1pfk8z.mirror.aliyuncs.com",
+        "https://kfwkfulq.mirror.aliyuncs.com",
+        "https://2lqq34jg.mirror.aliyuncs.com",
+        "https://pee6w651.mirror.aliyuncs.com",
+        "https://hub-mirror.c.163.com/",
+        "https://reg-mirror.qiniu.com"
+    ],
+    "insecure-registries": ["192.168.56.101"]
+}
+EOF
+```
+
 - 重新提交成功
 
 ```shell
