@@ -10,6 +10,7 @@ URL:            https://flink.apache.org
 Source0:        %{name}-%{version}-bin-hadoop27-scala_2.11.tgz
 
 BuildArch:      noarch
+Requires:       java
 
 %description
 Apache Flink is a framework and distributed processing engine for stateful computations over unbounded and bounded data streams.
