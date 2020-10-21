@@ -46,9 +46,9 @@ Description=Nginx service
 
 [Service]
 Type=forking
-ExecStart=/opt/nginx-1.19.3/sbin/nginx
-ExecReload=/opt/nginx-1.19.3/sbin/nginx -s reload
-ExecStop=/opt/nginx-1.19.3/sbin/nginx -s stop
+ExecStart=/opt/%{name}-%{version}/sbin/nginx
+ExecReload=/opt/%{name}-%{version}/sbin/nginx -s reload
+ExecStop=/opt/%{name}-%{version}/sbin/nginx -s stop
 
 [Install]
 WantedBy=multi-user.target

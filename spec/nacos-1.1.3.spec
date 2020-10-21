@@ -46,8 +46,8 @@ Description=Nacos server service
 
 [Service]
 Type=forking
-ExecStart=/opt/nacos-1.1.3/bin/startup.sh -m standalone
-ExecStop=/opt/nacos-1.1.3/bin/shutdown.sh
+ExecStart=/opt/%{name}-%{version}/bin/startup.sh -m standalone
+ExecStop=/opt/%{name}-%{version}/bin/shutdown.sh
 
 [Install]
 WantedBy=multi-user.target
