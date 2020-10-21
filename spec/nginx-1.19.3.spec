@@ -39,6 +39,29 @@ rm -rf $RPM_BUILD_ROOT
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post
+cat <<EOF > /usr/lib/systemd/system/nginx.service
+[Unit]
+Description=Nginx service
+
+[Service]
+Type=forking
+ExecStart=/opt/nginx-1.19.3/sbin/nginx
+ExecReload=/opt/nginx-1.19.3/sbin/nginx -s reload
+ExecStop=/opt/nginx-1.19.3/sbin/nginx -s stop
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable nginx
+
+%postun
+systemctl disable nginx
+if [ -f "/usr/lib/systemd/system/nginx.service" ];then
+  rm -f /usr/lib/systemd/system/nginx.service
+fi
+
 %changelog
 * Tue Oct 20 2020 xw
 - first build

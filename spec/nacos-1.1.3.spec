@@ -39,6 +39,28 @@ cp -rp %_builddir/%{name}-%{version}/*  $RPM_BUILD_ROOT/opt/%{name}-%{version}
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post
+cat <<EOF > /usr/lib/systemd/system/nacos.service
+[Unit]
+Description=Nacos server service
+
+[Service]
+Type=forking
+ExecStart=/opt/nacos-1.1.3/bin/startup.sh -m standalone
+ExecStop=/opt/nacos-1.1.3/bin/shutdown.sh
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable nacos
+
+%postun
+systemctl disable nacos
+if [ -f "/usr/lib/systemd/system/nacos.service" ];then
+  rm -f /usr/lib/systemd/system/nacos.service
+fi
+
 %changelog
 * Tue Oct 20 2020 xw
 - first build
