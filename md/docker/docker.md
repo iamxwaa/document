@@ -131,7 +131,7 @@ other_args='--selinux-enabled --insecure-registry 192.168.118.147:5000'
 - 创建/etc/docker/daemon.json,写入以下内容
 
 ```shell
-{ "insecure-registries":["192.168.119.218:2375"], "registry-mirrors": ["https://dftbcros.mirror.aliyuncs.com"] }
+{ "insecure-registries":["192.168.118.147:5000"], "registry-mirrors": ["https://dftbcros.mirror.aliyuncs.com"] }
 ```
 
 或
@@ -147,7 +147,7 @@ cat <<EOF > /etc/docker/daemon.json
         "https://hub-mirror.c.163.com/",
         "https://reg-mirror.qiniu.com"
     ],
-    "insecure-registries": ["192.168.56.101"]
+    "insecure-registries": ["192.168.118.147:5000"]
 }
 EOF
 ```
