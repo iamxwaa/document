@@ -18,8 +18,7 @@ ip|hostname|cpu|内存|节点类型
 
 ```bash
 #关闭防火墙
-systemctl stop firewalld
-systemctl disable firewalld
+systemctl stop firewalld && systemctl disable firewalld
 
 #禁用selinux
 setenforce 0
@@ -59,7 +58,7 @@ net.bridge.bridge-nf-call-iptables = 1
         "https://hub-mirror.c.163.com/",
         "https://reg-mirror.qiniu.com"
     ],
-    "insecure-registries": ["192.168.56.101"]
+    "insecure-registries": ["192.168.56.101:5000"]
 }
 ```
 
@@ -97,7 +96,7 @@ EOF
 
 - 更新yum，`yum clean all && yum repolist`
 
-- 开始安装，`yum install kubectl kubeadm kubelet`
+- 开始安装，`yum install kubectl kubeadm kubelet -y`
 
 - 修改/lib/systemd/system/kubelet.service.d/10-kubeadm.conf，添加--cgroup-driver=systemd
 
@@ -131,6 +130,8 @@ k8s.gcr.io/kube-scheduler            v1.19.0             cbdc8369d8b1        7 w
 k8s.gcr.io/coredns                   1.7.0               bfe3a36ebd25        3 months ago        45.2 MB
 k8s.gcr.io/pause                     3.2                 80d28bedfe5d        8 months ago        683 kB
 ```
+
+> 可以将上面下载的镜像导出`docker image save -o xxx.tar ***`，在各worker节点重新导入，加快后续的部署
 
 - 创建 kubeadm-config.yaml
 

@@ -49,7 +49,7 @@ registry                        latest              d1fd7d86a825        3 weeks 
 3.3 启动私有仓库镜像
 
 ```shell
-docker run -d -p 5000:5000 -v /root/docker/registry:/tmp/registry registry
+docker run -p 5000:5000 -v /root/docker/registry:/tmp/registry --restart=always -d --name=registry docker.io/registry
 ```
 
 > -d 镜像后台启动
