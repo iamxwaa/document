@@ -106,7 +106,7 @@ bin/kafka-acls.sh
 --cluster|指定集群作为资源。|-|Resource
 --topic [topic-name]|指定topic作为资源。||Resource
 --group [group-name]|指定 consumer-group 作为资源。|-|Resource
--allow-principal|添加到允许访问的ACL中，Principal是PrincipalType:name格式。你可以指定多个。|-|Principal
+--allow-principal|添加到允许访问的ACL中，Principal是PrincipalType:name格式。你可以指定多个。|-|Principal
 --deny-principal|添加到拒绝访问的ACL中，Principal是PrincipalType:name格式。你可以指定多个。|-|Principal
 --allow-host|--allow-principal中的principal的IP地址允许访问。|如果--allow-principal指定的默认值是*，则意味着指定“所有主机”|Host
 --deny-host|允许或拒绝的操作。有效值为：读，写，创建，删除，更改，描述，ClusterAction，全部|ALL|Operation
