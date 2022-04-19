@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: apache
+  name: flink-taskmanager-query-state
+spec:
+  type: NodePort
+  ports:
+  - name: query-state
+    port: 6125
+    targetPort: 6125
+    nodePort: 30025
+  selector:
+    app: flink
+    component: taskmanager
+    
