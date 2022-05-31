@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: default
+  labels:
+    app: prometheus
+spec:
+  type: NodePort
+  ports:
+    - port: 9090
+      nodePort: 30090
+  selector:
+    app: prometheus
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.35.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: prometheus-config-volumed
+              mountPath: "/etc/prometheus/"
+            - name: prometheus-volume
+              mountPath: /prometheus
+      volumes:
+        - name: prometheus-config-volume
+          configMap:
+            name: prometheus-config
+        - name: prometheus-volume
+          persistentVolumeClaim:
+            claimName: prometheus
+---
+kind: "PersistentVolumeClaim"
+apiVersion: "v1"
+metadata:
+  name: prometheus
+  namespace: default  
+  annotations:
+    volume.alpha.kubernetes.io/storage-class: "nfs160"
+  labels:
+    app: prometheus
+spec:
+  storageClassName: nfs160
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "50Gi"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: default
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval:     15s
+      evaluation_interval: 15s
+    alerting:
+      alertmanagers:
+      - static_configs:
+        - targets:
+    rule_files:
+    scrape_configs:
+      - job_name: 'kafka153'
+        static_configs:
+        - targets:
+          - 192.168.120.153:19308
+      - job_name: 'node153'
+        static_configs:
+        - targets:
+          - 192.168.120.153:19309
+      - job_name: 'process153'
+        static_configs:
+        - targets:
+          - 192.168.120.153:19310
+      - job_name: 'es153'
+        scrape_interval: 10s
+        metrics_path: "/_prometheus/metrics"
+        static_configs:
+        - targets:
+          - 192.168.120.153:9200
