@@ -256,3 +256,9 @@ systemctl start ntpd
     ```shell   
     SELINUX=disabled
     ```
+
+- 安装
+
+```bash
+yum install ambari-server*.rpm
+```
